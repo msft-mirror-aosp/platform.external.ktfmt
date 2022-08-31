@@ -36,7 +36,7 @@ def main():
       '--includes_file',
       '-i',
       default='',
-      help='The file containing the Kotlin files and directories that should be formatted/checked.'
+      help='The file containing the Kotlin files and directories that should be included/excluded, generated using generate_includes_file.py.'
   )
   parser.add_argument(
       'files',
@@ -68,17 +68,20 @@ def main():
     f = open(includes_file, 'r')
 
     lines = f.read().splitlines()
+    included = [line[1:] for line in lines if line.startswith('+')]
     included_files = set()
     included_dirs = []
-    for line in lines:
+    for line in included:
       if is_kotlin_file(line):
         included_files.add(line)
       else:
         included_dirs += [line]
 
+    excluded_files = [line[1:] for line in lines if line.startswith('-')]
+
     kt_files = [
-        kt_file for kt_file in kt_files
-        if kt_file in included_files or is_included(kt_file, included_dirs)
+        kt_file for kt_file in kt_files if kt_file not in excluded_files and
+        (kt_file in included_files or is_included(kt_file, included_dirs))
     ]
 
   # No need to start ktfmt if there are no files to check/format.
