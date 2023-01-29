@@ -54,7 +54,8 @@ class GoogleStyleFormatterKtTest {
         |
         |          ImmutableList.newBuilder().add(1).add(1).add(1).add(1).add(1).add(1).add(1).add(1).add(1).add(1).build()
         |     }
-        |""".trimMargin()
+        |"""
+            .trimMargin()
 
     val expected =
         """
@@ -96,7 +97,8 @@ class GoogleStyleFormatterKtTest {
         |    .add(1)
         |    .build()
         |}
-        |""".trimMargin()
+        |"""
+            .trimMargin()
 
     assertThatFormatting(code).withOptions(Formatter.GOOGLE_FORMAT).isEqualTo(expected)
     // Don't add more tests here
@@ -140,7 +142,8 @@ class GoogleStyleFormatterKtTest {
       |class C(a: Int, var b: Int, val c: Int) {
       |  //
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -188,7 +191,8 @@ class GoogleStyleFormatterKtTest {
       |fun c12(a: Int, var b: Int, val c: Int) {
       |  //
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -212,7 +216,8 @@ class GoogleStyleFormatterKtTest {
       |    //
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -233,28 +238,159 @@ class GoogleStyleFormatterKtTest {
       |      }
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
   @Test
-  fun `don't one-line lambdas following parameter breaks`() =
+  fun `no forward propagation of breaks in call expressions (at trailing lambda)`() =
+      assertFormatted(
+          """
+      |--------------------------
+      |fun test() {
+      |  foo_bar_baz__zip<A>(b) {
+      |    c
+      |  }
+      |  foo.bar(baz).zip<A>(b) {
+      |    c
+      |  }
+      |}
+      |"""
+              .trimMargin(),
+          formattingOptions = Formatter.GOOGLE_FORMAT,
+          deduceMaxWidth = true)
+
+  @Test
+  fun `forward propagation of breaks in call expressions (at value args)`() =
+      assertFormatted(
+          """
+      |----------------------
+      |fun test() {
+      |  foo_bar_baz__zip<A>(
+      |    b
+      |  ) {
+      |    c
+      |  }
+      |}
+      |
+      |fun test() {
+      |  foo.bar(baz).zip<A>(
+      |    b
+      |  ) {
+      |    c
+      |  }
+      |}
+      |"""
+              .trimMargin(),
+          formattingOptions = Formatter.GOOGLE_FORMAT,
+          deduceMaxWidth = true)
+
+  @Test
+  fun `forward propagation of breaks in call expressions (at type args)`() =
+      assertFormatted(
+          """
+      |-------------------
+      |fun test() {
+      |  foo_bar_baz__zip<
+      |    A
+      |  >(
+      |    b
+      |  ) {
+      |    c
+      |  }
+      |  foo.bar(baz).zip<
+      |    A
+      |  >(
+      |    b
+      |  ) {
+      |    c
+      |  }
+      |}
+      |"""
+              .trimMargin(),
+          formattingOptions = Formatter.GOOGLE_FORMAT,
+          deduceMaxWidth = true)
+
+  @Test
+  fun `expected indent in methods following single-line strings`() =
+      assertFormatted(
+          """
+      |-------------------------
+      |"Hello %s".format(
+      |  someLongExpression
+      |)
+      |"""
+              .trimMargin(),
+          formattingOptions = Formatter.GOOGLE_FORMAT,
+          deduceMaxWidth = true)
+
+  @Test
+  fun `forced break between multi-line strings and their selectors`() =
+      assertFormatted(
+          """
+      |-------------------------
+      |val STRING =
+      |  $TQ
+      |  |foo
+      |  |$TQ
+      |    .wouldFit()
+      |
+      |val STRING =
+      |  $TQ
+      |  |foo
+      |  |----------------------------------$TQ
+      |    .wouldntFit()
+      |
+      |val STRING =
+      |  $TQ
+      |  |foo
+      |  |$TQ
+      |    .firstLink()
+      |    .secondLink()
+      |"""
+              .trimMargin(),
+          formattingOptions = Formatter.GOOGLE_FORMAT,
+          deduceMaxWidth = true)
+
+  @Test
+  fun `properly break fully qualified nested user types`() =
+      assertFormatted(
+          """
+      |-------------------------------------------------------
+      |val complicated:
+      |  com.example.interesting.SomeType<
+      |    com.example.interesting.SomeType<Int, Nothing>,
+      |    com.example.interesting.SomeType<
+      |      com.example.interesting.SomeType<Int, Nothing>,
+      |      Nothing
+      |    >
+      |  > =
+      |  DUMMY
+      |"""
+              .trimMargin(),
+          formattingOptions = Formatter.GOOGLE_FORMAT,
+          deduceMaxWidth = true)
+
+  @Test
+  fun `don't one-line lambdas following argument breaks`() =
       assertFormatted(
           """
       |------------------------------------------------------------------------
       |class Foo : Bar() {
       |  fun doIt() {
-      |    // don't break in lambda, no parameter breaks found
+      |    // don't break in lambda, no argument breaks found
       |    fruit.forEach { eat(it) }
       |
-      |    // don't break in lambda, because we only detect parameter breaks
-      |    // with trailing commas
+      |    // break in lambda, without comma
       |    fruit.forEach(
       |      someVeryLongParameterNameThatWillCauseABreak,
       |      evenWithoutATrailingCommaOnTheParameterListSoLetsSeeIt
-      |    ) { eat(it) }
+      |    ) {
+      |      eat(it)
+      |    }
       |
-      |    // break in the lambda
+      |    // break in the lambda, with comma
       |    fruit.forEach(
       |      fromTheVine = true,
       |    ) {
@@ -291,7 +427,8 @@ class GoogleStyleFormatterKtTest {
       |    }
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -308,7 +445,8 @@ class GoogleStyleFormatterKtTest {
       |    123456789012345678901234567890
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT)
 
   @Test
@@ -338,7 +476,8 @@ class GoogleStyleFormatterKtTest {
       |    }
       |    .build()
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
       )
 
@@ -353,7 +492,8 @@ class GoogleStyleFormatterKtTest {
       |    }
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
       )
 
@@ -368,9 +508,12 @@ class GoogleStyleFormatterKtTest {
       |      step1()
       |      step2()
       |    }
-      |  ) { it.doIt() }
+      |  ) {
+      |    it.doIt()
+      |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
       )
 
@@ -385,7 +528,8 @@ class GoogleStyleFormatterKtTest {
       |    }
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
       )
 
@@ -402,7 +546,8 @@ class GoogleStyleFormatterKtTest {
       |    c = 3456789012345678901234567890
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT)
 
   @Test
@@ -430,7 +575,8 @@ class GoogleStyleFormatterKtTest {
       |    )
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -450,7 +596,8 @@ class GoogleStyleFormatterKtTest {
       |        .doThat()
       |    )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -468,7 +615,8 @@ class GoogleStyleFormatterKtTest {
       |  )
       |  return if (b) 1 else 2
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT)
 
   @Test
@@ -484,7 +632,8 @@ class GoogleStyleFormatterKtTest {
       |      },
       |    duration = duration
       |  )
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT)
 
   @Test
@@ -507,7 +656,8 @@ class GoogleStyleFormatterKtTest {
       |      ) +
       |      value9
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -556,7 +706,8 @@ class GoogleStyleFormatterKtTest {
       |      b is String
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -587,7 +738,8 @@ class GoogleStyleFormatterKtTest {
       |    State(0)
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -616,7 +768,8 @@ class GoogleStyleFormatterKtTest {
       |    )
       |    .doThat()
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -641,7 +794,8 @@ class GoogleStyleFormatterKtTest {
       |    offspring
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -657,7 +811,8 @@ class GoogleStyleFormatterKtTest {
       |      Foo.createSpeciallyDesignedParameter(),
       |    )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -700,7 +855,8 @@ class GoogleStyleFormatterKtTest {
       |    3,
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -755,7 +911,8 @@ class GoogleStyleFormatterKtTest {
       |    .methodName4()
       |    .abcdefghijkl()
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -778,7 +935,8 @@ class GoogleStyleFormatterKtTest {
       |    }
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT)
 
   @Test
@@ -796,7 +954,8 @@ class GoogleStyleFormatterKtTest {
       |      println("b")
       |    )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -815,7 +974,59 @@ class GoogleStyleFormatterKtTest {
       |  doItOnce()
       |  doItTwice()
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
+
+  @Test
+  fun `comma separated lists, no automatic trailing break after lambda params`() =
+      assertFormatted(
+          """
+      |----------------------------
+      |fun foo() {
+      |  someExpr.let { x -> x }
+      |  someExpr.let { x, y -> x }
+      |
+      |  someExpr.let { paramFits
+      |    ->
+      |    butNotArrow
+      |  }
+      |  someExpr.let { params, fit
+      |    ->
+      |    butNotArrow
+      |  }
+      |
+      |  someExpr.let {
+      |    parameterToLong ->
+      |    fits
+      |  }
+      |  someExpr.let {
+      |    tooLong,
+      |    together ->
+      |    fits
+      |  }
+      |}
+      |"""
+              .trimMargin(),
+          formattingOptions = Formatter.GOOGLE_FORMAT,
+          deduceMaxWidth = true)
+
+  @Test
+  fun `comma separated lists, no automatic trailing break after supertype list`() =
+      assertFormatted(
+          """
+      |----------------------------
+      |class Foo() :
+      |  ThisList,
+      |  WillBe,
+      |  TooLong(thats = ok) {
+      |  fun someMethod() {
+      |    val forceBodyBreak = 0
+      |  }
+      |}
+      |"""
+              .trimMargin(),
+          formattingOptions = Formatter.GOOGLE_FORMAT,
+          deduceMaxWidth = true)
 
   @Test
   fun `if expression with multiline condition`() =
@@ -841,7 +1052,8 @@ class GoogleStyleFormatterKtTest {
       |    bar()
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -857,7 +1069,8 @@ class GoogleStyleFormatterKtTest {
       |    bar()
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -887,7 +1100,8 @@ class GoogleStyleFormatterKtTest {
       |    2 -> print(2)
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -904,7 +1118,8 @@ class GoogleStyleFormatterKtTest {
       |    2 -> print(2)
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -932,7 +1147,8 @@ class GoogleStyleFormatterKtTest {
       |    bar()
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -948,7 +1164,8 @@ class GoogleStyleFormatterKtTest {
       |    bar()
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -970,7 +1187,8 @@ class GoogleStyleFormatterKtTest {
       |      boo
       |    )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -988,7 +1206,8 @@ class GoogleStyleFormatterKtTest {
       |    param2
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -1002,7 +1221,8 @@ class GoogleStyleFormatterKtTest {
       |    .doOp(1)
       |    .doOp(2)
       |)
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
 
@@ -1018,7 +1238,80 @@ class GoogleStyleFormatterKtTest {
       |    c: String,
       |    d: String
       |  ) -> Unit
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           formattingOptions = Formatter.GOOGLE_FORMAT,
           deduceMaxWidth = true)
+
+  @Test
+  fun `function call following long multiline string`() =
+      assertFormatted(
+          """
+      |--------------------------------
+      |fun f() {
+      |  val str1 =
+      |    $TQ
+      |    Some very long string that might mess things up
+      |    $TQ
+      |      .trimIndent()
+      |
+      |  val str2 =
+      |    $TQ
+      |    Some very long string that might mess things up
+      |    $TQ
+      |      .trimIndent(someArg)
+      |}
+      |"""
+              .trimMargin(),
+          formattingOptions = Formatter.GOOGLE_FORMAT,
+          deduceMaxWidth = true)
+
+  @Test
+  fun `array-literal in annotation`() =
+      assertFormatted(
+          """
+      |--------------------------------
+      |@Anno(
+      |  array =
+      |    [
+      |      someItem,
+      |      andAnother,
+      |      noTrailingComma
+      |    ]
+      |)
+      |class Host
+      |
+      |@Anno(
+      |  array =
+      |    [
+      |      someItem,
+      |      andAnother,
+      |      withTrailingComma,
+      |    ]
+      |)
+      |class Host
+      |
+      |@Anno(
+      |  array =
+      |    [
+      |      // Comment
+      |      someItem,
+      |      // Comment
+      |      andAnother,
+      |      // Comment
+      |      withTrailingComment
+      |      // Comment
+      |      // Comment
+      |    ]
+      |)
+      |class Host
+      |"""
+              .trimMargin(),
+          formattingOptions = Formatter.GOOGLE_FORMAT,
+          deduceMaxWidth = true)
+
+  companion object {
+    /** Triple quotes, useful to use within triple-quoted strings. */
+    private const val TQ = "\"\"\""
+  }
 }
