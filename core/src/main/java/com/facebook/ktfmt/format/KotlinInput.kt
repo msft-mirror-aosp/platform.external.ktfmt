@@ -28,6 +28,7 @@ import com.google.googlejavaformat.Input
 import com.google.googlejavaformat.Newlines
 import com.google.googlejavaformat.java.FormatterException
 import com.google.googlejavaformat.java.JavaOutput
+import java.util.LinkedHashMap
 import org.jetbrains.kotlin.com.intellij.openapi.util.text.StringUtil
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtFile
@@ -54,7 +55,16 @@ class KotlinInput(private val text: String, file: KtFile) : Input() {
     val toks = buildToks(file, text)
     positionToColumnMap = makePositionToColumnMap(toks)
     tokens = buildTokens(toks)
-    positionTokenMap = buildTokenPositionsMap(tokens)
+    val tokenLocations = ImmutableRangeMap.builder<Int, Token>()
+    for (token in tokens) {
+      val end = JavaOutput.endTok(token)
+      var upper = end.position
+      if (end.text.isNotEmpty()) {
+        upper += end.length() - 1
+      }
+      tokenLocations.put(Range.closed(JavaOutput.startTok(token).position, upper), token)
+    }
+    positionTokenMap = tokenLocations.build()
 
     // adjust kN for EOF
     kToToken = arrayOfNulls(kN + 1)
@@ -124,8 +134,13 @@ class KotlinInput(private val text: String, file: KtFile) : Input() {
             enclosed.iterator().next().tok.index, getLast(enclosed).getTok().getIndex() + 1)
   }
 
-  private fun makePositionToColumnMap(toks: List<KotlinTok>) =
-      ImmutableMap.copyOf(toks.map { it.position to it.column }.toMap())
+  private fun makePositionToColumnMap(toks: List<KotlinTok>): ImmutableMap<Int, Int> {
+    val builder = LinkedHashMap<Int, Int>()
+    for (tok in toks) {
+      builder.put(tok.position, tok.column)
+    }
+    return ImmutableMap.copyOf(builder)
+  }
 
   private fun buildToks(file: KtFile, fileText: String): ImmutableList<KotlinTok> {
     val tokenizer = Tokenizer(fileText, file)
@@ -190,17 +205,6 @@ class KotlinInput(private val text: String, file: KtFile) : Input() {
       toksBefore = ImmutableList.builder()
     }
     return tokens.build()
-  }
-
-  private fun buildTokenPositionsMap(tokens: ImmutableList<Token>): ImmutableRangeMap<Int, Token> {
-    val tokenLocations = ImmutableRangeMap.builder<Int, Token>()
-    for (token in tokens) {
-      val end = JavaOutput.endTok(token)
-      val endPosition = end.position + (if (end.text.isNotEmpty()) end.length() - 1 else 0)
-      tokenLocations.put(Range.closed(JavaOutput.startTok(token).position, endPosition), token)
-    }
-
-    return tokenLocations.build()
   }
 
   private fun isParamComment(tok: Tok): Boolean {
