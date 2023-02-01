@@ -47,7 +47,8 @@ class FormatterTest {
         |println("Called with args:")
         |
         |args.forEach { println(File + "-") }
-        |""".trimMargin())
+        |"""
+              .trimMargin())
 
   @Test
   fun `support script (kts) files with a shebang`() =
@@ -57,7 +58,8 @@ class FormatterTest {
         |package foo
         |
         |println("Called")
-        |""".trimMargin())
+        |"""
+              .trimMargin())
 
   @Test
   fun `call chains`() =
@@ -94,7 +96,8 @@ class FormatterTest {
       |      .add(1)
       |      .build()
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -116,7 +119,8 @@ class FormatterTest {
       |  doc.computeBreaks(
       |      output.commentsHelper, maxWidth, State(0))
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -139,7 +143,8 @@ class FormatterTest {
       |) {
       |  val a = 0
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -170,7 +175,8 @@ class FormatterTest {
         |
         |          ImmutableList.newBuilder().add(1).add(1).add(1).add(1).add(1).add(1).add(1).add(1).add(1).add(1).build()
         |     }
-        |""".trimMargin()
+        |"""
+            .trimMargin()
 
     val expected =
         """
@@ -211,7 +217,8 @@ class FormatterTest {
         |      .add(1)
         |      .build()
         |}
-        |""".trimMargin()
+        |"""
+            .trimMargin()
 
     assertThatFormatting(code).isEqualTo(expected)
     // Don't add more tests here
@@ -225,7 +232,8 @@ class FormatterTest {
       |  var x: Int = 4
       |  val y = 0
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test fun `class without a body nor properties`() = assertFormatted("class Foo\n")
 
@@ -239,7 +247,8 @@ class FormatterTest {
           """fun interface MyRunnable {
         |  fun runIt()
         |}
-        |""".trimMargin())
+        |"""
+              .trimMargin())
 
   @Test
   fun `handle complex fun interface without body`() =
@@ -258,7 +267,8 @@ class FormatterTest {
       |  fun method() {}
       |  class Bar
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `properties and fields with modifiers`() =
@@ -270,7 +280,8 @@ class FormatterTest {
       |  open var f3 = 0
       |  final var f4 = 0
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `properties with multiple modifiers`() =
@@ -279,7 +290,8 @@ class FormatterTest {
       |class Foo(public open inner val p1: Int) {
       |  public open inner var f2 = 0
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `spaces around binary operations`() =
@@ -289,7 +301,8 @@ class FormatterTest {
       |  a = 5
       |  x + 1
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `breaking long binary operations`() =
@@ -310,7 +323,8 @@ class FormatterTest {
       |              value8) +
       |          value9
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -322,7 +336,8 @@ class FormatterTest {
       |  return expression1 != expression2 ||
       |      expression2 != expression1
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -341,7 +356,8 @@ class FormatterTest {
         |          "lazy" +
         |          "dog"
         |}
-        |""".trimMargin(),
+        |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -358,7 +374,8 @@ class FormatterTest {
         |          "over" +
         |          "the".."lazy" + "dog"
         |}
-        |""".trimMargin(),
+        |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -413,7 +430,8 @@ class FormatterTest {
         |        //
         |      }
         |}
-        |""".trimMargin(),
+        |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -424,7 +442,8 @@ class FormatterTest {
      |// a
      |
      |/* Another comment */
-     |""".trimMargin())
+     |"""
+              .trimMargin())
 
   @Test
   fun `properties with accessors`() =
@@ -445,7 +464,8 @@ class FormatterTest {
       |  var zz = false
       |    private set
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `properties with accessors and semicolons on same line`() {
@@ -456,7 +476,8 @@ class FormatterTest {
       |  internal val a by lazy { 5 }; internal get
       |  var foo: Int; get() = 6; set(x) {};
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
 
     val expected =
         """
@@ -469,7 +490,8 @@ class FormatterTest {
       |    get() = 6
       |    set(x) {}
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
 
     assertThatFormatting(code).isEqualTo(expected)
   }
@@ -485,7 +507,8 @@ class FormatterTest {
       |      "Hello there this is long"
       |    get() = field
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -498,7 +521,8 @@ class FormatterTest {
       |  a++
       |  a === b
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `package names stay in one line`() {
@@ -507,13 +531,15 @@ class FormatterTest {
       | package  com  .example. subexample
       |
       |fun f() = 1
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |package com.example.subexample
       |
       |fun f() = 1
-      |""".trimMargin()
+      |"""
+            .trimMargin()
 
     assertThatFormatting(code).isEqualTo(expected)
   }
@@ -527,15 +553,18 @@ class FormatterTest {
       |import `nothing stops`.`us`.`from doing this`
       |
       |fun f() = `from doing this`()
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `safe dot operator expression`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |fun f() {
       |  node?.name
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `safe dot operator expression with normal`() =
@@ -544,7 +573,8 @@ class FormatterTest {
       |fun f() {
       |  node?.name.hello
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `safe dot operator expression chain in expression function`() =
@@ -553,7 +583,8 @@ class FormatterTest {
       |--------------------------------------------------
       |fun f(number: Int) =
       |    Something.doStuff(number)?.size
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -575,7 +606,8 @@ class FormatterTest {
       |  foo.facebook.Foo
       |      .format()
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -626,7 +658,8 @@ class FormatterTest {
       |      .methodName4()
       |      .abcdefghijkl()
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -703,7 +736,8 @@ class FormatterTest {
       |            foo
       |          }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -725,27 +759,27 @@ class FormatterTest {
       |        }
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
-  fun `don't one-line lambdas following parameter breaks`() =
+  fun `don't one-line lambdas following argument breaks`() =
       assertFormatted(
           """
       |------------------------------------------------------------------------
       |class Foo : Bar() {
       |  fun doIt() {
-      |    // don't break in lambda, no parameter breaks found
+      |    // don't break in lambda, no argument breaks found
       |    fruit.forEach { eat(it) }
       |
-      |    // break in the lambda because the closing paren gets attached
-      |    // to the last argument
+      |    // break in the lambda, without comma
       |    fruit.forEach(
       |        someVeryLongParameterNameThatWillCauseABreak,
       |        evenWithoutATrailingCommaOnTheParameterListSoLetsSeeIt) {
-      |      eat(it)
-      |    }
+      |          eat(it)
+      |        }
       |
-      |    // break in the lambda
+      |    // break in the lambda, with comma
       |    fruit.forEach(
       |        fromTheVine = true,
       |    ) {
@@ -782,7 +816,8 @@ class FormatterTest {
       |    }
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -800,26 +835,106 @@ class FormatterTest {
       |        }
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
-  fun `no break between multi-line strings and their selectors`() =
+  fun `no forward propagation of breaks in call expressions (at trailing lambda)`() =
+      assertFormatted(
+          """
+      |--------------------------
+      |fun test() {
+      |  foo_bar_baz__zip<A>(b) {
+      |    c
+      |  }
+      |  foo.bar(baz).zip<A>(b) {
+      |    c
+      |  }
+      |}
+      |"""
+              .trimMargin(),
+          deduceMaxWidth = true)
+
+  @Test
+  fun `forward propagation of breaks in call expressions (at value args)`() =
+      assertFormatted(
+          """
+      |----------------------
+      |fun test() {
+      |  foo_bar_baz__zip<A>(
+      |      b) {
+      |        c
+      |      }
+      |}
+      |
+      |fun test() {
+      |  foo.bar(baz).zip<A>(
+      |      b) {
+      |        c
+      |      }
+      |}
+      |"""
+              .trimMargin(),
+          deduceMaxWidth = true)
+
+  @Test
+  fun `forward propagation of breaks in call expressions (at type args)`() =
+      assertFormatted(
+          """
+      |-------------------
+      |fun test() {
+      |  foo_bar_baz__zip<
+      |      A>(
+      |      b) {
+      |        c
+      |      }
+      |  foo.bar(baz).zip<
+      |      A>(
+      |      b) {
+      |        c
+      |      }
+      |}
+      |"""
+              .trimMargin(),
+          deduceMaxWidth = true)
+
+  @Test
+  fun `expected indent in methods following single-line strings`() =
+      assertFormatted(
+          """
+      |-------------------------
+      |"Hello %s".format(
+      |    someLongExpression)
+      |"""
+              .trimMargin(),
+          deduceMaxWidth = true)
+
+  @Test
+  fun `forced break between multi-line strings and their selectors`() =
       assertFormatted(
           """
       |-------------------------
       |val STRING =
-      |    ""${'"'}
+      |    $TQ
       |    |foo
-      |    |""${'"'}.trimMargin()
+      |    |$TQ
+      |        .wouldFit()
       |
-      |// This is a bug (line is longer than limit)
-      |// that we don't know how to avoid, for now.
       |val STRING =
-      |    ""${'"'}
+      |    $TQ
       |    |foo
-      |    |----------------------------------""${'"'}.trimMargin()
-      |""".trimMargin(),
+      |    |----------------------------------$TQ
+      |        .wouldntFit()
+      |
+      |val STRING =
+      |    $TQ
+      |    |foo
+      |    |$TQ
+      |        .firstLink()
+      |        .secondLink()
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -834,7 +949,8 @@ class FormatterTest {
       |                  test */
       |
       |val x = FooBar.def { foosBars(bar) }
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |import abc.def /*
@@ -845,7 +961,8 @@ class FormatterTest {
       |import foo.bar // Test
       |
       |val x = FooBar.def { foosBars(bar) }
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -855,7 +972,8 @@ class FormatterTest {
         """
         |import com.example.zab // test
         |import com.example.foo ; val x = Sample(foo, zab)
-        |""".trimMargin()
+        |"""
+            .trimMargin()
 
     val expected =
         """
@@ -863,7 +981,8 @@ class FormatterTest {
         |import com.example.zab // test
         |
         |val x = Sample(foo, zab)
-        |""".trimMargin()
+        |"""
+            .trimMargin()
 
     assertThatFormatting(code).isEqualTo(expected)
   }
@@ -878,7 +997,8 @@ class FormatterTest {
       |import com.example.wow
       |
       |val x = `if` { we.`when`(wow) }
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `backticks are ignored in import sort order ('as' directory)`() =
@@ -890,7 +1010,8 @@ class FormatterTest {
       |import com.example.a as wow
       |
       |val x = `if` { we.`when`(wow) }
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `imports are deduplicated`() {
@@ -905,7 +1026,8 @@ class FormatterTest {
       |import com.example.a as `when`
       |
       |val x = `if` { we.`when`(wow) } ?: b
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |import com.example.a as `if`
@@ -916,7 +1038,8 @@ class FormatterTest {
       |import com.example.b.*
       |
       |val x = `if` { we.`when`(wow) } ?: b
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -939,7 +1062,8 @@ class FormatterTest {
       |  `if` { bar }
       |  val x = unused()
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |import com.used.FooBarBaz as Baz
@@ -954,7 +1078,8 @@ class FormatterTest {
       |  `if` { bar }
       |  val x = unused()
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -971,7 +1096,8 @@ class FormatterTest {
       |fun test() {
       |  foo(CONSTANT, Sample())
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |package com.example
@@ -982,7 +1108,8 @@ class FormatterTest {
       |fun test() {
       |  foo(CONSTANT, Sample())
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -1019,7 +1146,8 @@ class FormatterTest {
           | * @throws AnException
           | */
           |class Dummy
-          |""".trimMargin()
+          |"""
+            .trimMargin()
     val expected =
         """
           |package com.example.kdoc
@@ -1038,18 +1166,52 @@ class FormatterTest {
           | *
           | * Old {@link JavaDocLink} that gets removed.
           | *
+          | * @param unused [Param]
+          | * @return [Unit] as [ReturnedValue]
+          | * @property JavaDocLink [Param]
+          | * @throws AnException
           | * @throws AnException
           | * @exception Sample.SampleException
-          | * @param unused [Param]
-          | * @property JavaDocLink [Param]
-          | * @return [Unit] as [ReturnedValue]
           | * @sample Example
           | * @see Bar for more info
-          | * @throws AnException
           | */
           |class Dummy
-          |""".trimMargin()
+          |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
+  }
+
+  @Test
+  fun `keep import elements only mentioned in kdoc, single line`() {
+    assertFormatted(
+        """
+          |import com.shopping.Bag
+          |
+          |/**
+          | * Some summary.
+          | *
+          | * @param count you can fit this many in a [Bag]
+          | */
+          |fun fetchBananas(count: Int)
+          |"""
+            .trimMargin())
+  }
+
+  @Test
+  fun `keep import elements only mentioned in kdoc, multiline`() {
+    assertFormatted(
+        """
+          |import com.shopping.Bag
+          |
+          |/**
+          | * Some summary.
+          | *
+          | * @param count this is how many of these wonderful fruit you can fit into the useful object that
+          | *   you may refer to as a [Bag]
+          | */
+          |fun fetchBananas(count: Int)
+          |"""
+            .trimMargin())
   }
 
   @Test
@@ -1063,7 +1225,8 @@ class FormatterTest {
           |import com.example.component3
           |import com.example.component4
           |import com.example.component5
-          |""".trimMargin())
+          |"""
+              .trimMargin())
 
   @Test
   fun `keep operator imports`() =
@@ -1101,7 +1264,8 @@ class FormatterTest {
           |import com.example.timesAssign
           |import com.example.unaryMinus
           |import com.example.unaryPlus
-          |""".trimMargin())
+          |"""
+              .trimMargin())
 
   @Test
   fun `keep unused imports when formatting options has feature turned off`() {
@@ -1116,7 +1280,8 @@ class FormatterTest {
       |import com.unused.b as we
       |import com.unused.bar // test
       |import com.unused.`class`
-      |""".trimMargin()
+      |"""
+            .trimMargin()
 
     assertThatFormatting(code)
         .withOptions(FormattingOptions(removeUnusedImports = false))
@@ -1138,7 +1303,8 @@ class FormatterTest {
         |// trailing comment
         |
         |val x = Sample(abc, bcd)
-        |""".trimMargin()
+        |"""
+            .trimMargin()
     val expected =
         """
         |package com.facebook.ktfmt
@@ -1153,7 +1319,8 @@ class FormatterTest {
         |// trailing comment
         |
         |val x = Sample(abc, bcd)
-        |""".trimMargin()
+        |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -1166,7 +1333,8 @@ class FormatterTest {
         |/*
         |bar
         |*/
-        |""".trimMargin())
+        |"""
+              .trimMargin())
 
   @Test
   fun `basic annotations`() =
@@ -1179,7 +1347,8 @@ class FormatterTest {
       |    @Fancy val a = 1 + foo
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `function calls with multiple arguments`() =
@@ -1193,7 +1362,8 @@ class FormatterTest {
       |      123456789012345678901234567890,
       |      123456789012345678901234567890)
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `function calls with multiple named arguments`() =
@@ -1207,7 +1377,8 @@ class FormatterTest {
       |      b = 23456789012345678901234567890,
       |      c = 3456789012345678901234567890)
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `named arguments indent their value expression`() =
@@ -1221,7 +1392,8 @@ class FormatterTest {
       |              print()
       |            },
       |        duration = duration)
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `Arguments are blocks`() =
@@ -1247,7 +1419,8 @@ class FormatterTest {
       |        initializer = property.initializer)
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -1260,7 +1433,8 @@ class FormatterTest {
       |        println(number)
       |      })
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `anonymous function with receiver`() =
@@ -1272,7 +1446,8 @@ class FormatterTest {
       |        println(this)
       |      })
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `when() with a subject expression`() =
@@ -1290,7 +1465,8 @@ class FormatterTest {
       |    }
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `when() expression with complex predicates`() =
@@ -1305,7 +1481,8 @@ class FormatterTest {
       |    }
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `when() expression with several conditions`() =
@@ -1318,7 +1495,8 @@ class FormatterTest {
       |    else -> print(0)
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `when() expression with is and in`() =
@@ -1336,7 +1514,8 @@ class FormatterTest {
       |    else -> print(3)
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `when() expression with enum values`() =
@@ -1349,7 +1528,8 @@ class FormatterTest {
       |    else -> print(3)
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `when() expression with generic matcher and exhaustive`() =
@@ -1361,7 +1541,8 @@ class FormatterTest {
       |    is Failure -> print(2)
       |  }.exhaustive
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `when() expression with multiline condition`() =
@@ -1384,7 +1565,8 @@ class FormatterTest {
       |    2 -> print(2)
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -1402,7 +1584,8 @@ class FormatterTest {
       |  doItOnce()
       |  doItTwice()
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `when() expression storing in local variable`() =
@@ -1414,7 +1597,8 @@ class FormatterTest {
       |    is Failure -> print(2)
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `line breaks inside when expressions and conditions`() =
@@ -1435,7 +1619,8 @@ class FormatterTest {
       |      }
       |      .build()
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `function return types`() =
@@ -1444,7 +1629,8 @@ class FormatterTest {
       |fun f1(): Int = 0
       |
       |fun f2(): Int {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `multi line function without a block body`() =
@@ -1457,7 +1643,8 @@ class FormatterTest {
       |
       |fun shortFun(): Int =
       |    1234567 + 1234567
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -1480,7 +1667,8 @@ class FormatterTest {
       |    //
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -1496,7 +1684,8 @@ class FormatterTest {
       |class Derived4 : Super1()
       |
       |class Derived5 : Super3<Int>()
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `list of superclasses over multiple lines`() =
@@ -1519,20 +1708,25 @@ class FormatterTest {
       |
       |class Derived5 :
       |    Super3<Int>()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
   fun `annotations with parameters`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |@AnnWithArrayValue(1, 2, 3) class C
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `method modifiers`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |override internal fun f() {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `class modifiers`() =
@@ -1545,7 +1739,8 @@ class FormatterTest {
       |final class Foo
       |
       |open class Foo
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `kdoc comments`() {
@@ -1556,11 +1751,14 @@ class FormatterTest {
       | */ class F {
       |
       | }
-      |""".trimMargin()
-    val expected = """
+      |"""
+            .trimMargin()
+    val expected =
+        """
       |/** foo */
       |class F {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -1573,11 +1771,14 @@ class FormatterTest {
       | */ class F {
       |
       | }
-      |""".trimMargin()
-    val expected = """
+      |"""
+            .trimMargin()
+    val expected =
+        """
       |/** foo /* bla */ */
       |class F {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -1591,7 +1792,8 @@ class FormatterTest {
       | * ```
       | */
       |fun foo() {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `formatting kdoc doesn't add p HTML tags`() =
@@ -1605,7 +1807,8 @@ class FormatterTest {
       | *
       | * <p>On the other hand, we respect existing tags, and don't remove them.
       | */
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `formatting kdoc preserves lists`() =
@@ -1618,7 +1821,8 @@ class FormatterTest {
       | *
       | * This is another paragraph
       | */
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `formatting kdoc lists with line wraps breaks and merges correctly`() {
@@ -1632,66 +1836,20 @@ class FormatterTest {
       | *
       | * This is another paragraph
       | */
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |/**
       | * Here are some fruit I like:
       | * - Banana Banana Banana Banana Banana Banana Banana Banana Banana Banana Banana Banana Banana
-      | * Banana Banana Banana Banana Banana
+      | *   Banana Banana Banana Banana Banana
       | * - Apple Apple Apple Apple Apple Apple
       | *
       | * This is another paragraph
       | */
-      |""".trimMargin()
-    assertThatFormatting(code).isEqualTo(expected)
-  }
-
-  @Test
-  fun `too many spaces on list continuation mean it's a code block, so mark it accordingly`() {
-    val code =
-        """
-      |/**
-      | * Here are some fruit I like:
-      | * - Banana Banana Banana Banana Banana Banana Banana Banana Banana Banana Banana Banana Banana
-      | *     Banana Banana Banana Banana Banana
-      | */
-      |""".trimMargin()
-    val expected =
-        """
-      |/**
-      | * Here are some fruit I like:
-      | * - Banana Banana Banana Banana Banana Banana Banana Banana Banana Banana Banana Banana Banana
-      | * ```
-      | *     Banana Banana Banana Banana Banana
-      | * ```
-      | */
-      |""".trimMargin()
-    assertThatFormatting(code).isEqualTo(expected)
-  }
-
-  @Test
-  fun `add explicit code markers around indented code`() {
-    val code =
-        """
-      |/**
-      | * This is a code example:
-      | *
-      | *     this_is_code()
-      | *
-      | * This is not code again
-      | */
-      |""".trimMargin()
-    val expected =
-        """
-      |/**
-      | * This is a code example:
-      | * ```
-      | *     this_is_code()
-      | * ```
-      | * This is not code again
-      | */
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -1706,7 +1864,8 @@ class FormatterTest {
       | *
       | * This is another paragraph
       | */
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `formatting kdoc preserves numbered`() =
@@ -1719,7 +1878,8 @@ class FormatterTest {
       | *
       | * This is another paragraph
       | */
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `formatting kdoc with markdown errors`() =
@@ -1727,7 +1887,8 @@ class FormatterTest {
           """
       |/** \[ */
       |fun markdownError() = Unit
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `return statement with value`() =
@@ -1736,7 +1897,8 @@ class FormatterTest {
       |fun random(): Int {
       |  return 4
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `return statement without value`() =
@@ -1746,7 +1908,8 @@ class FormatterTest {
       |  print(b)
       |  return
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `return expression without value`() =
@@ -1755,7 +1918,8 @@ class FormatterTest {
       |fun print(b: Boolean?) {
       |  print(b ?: return)
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `if statement without else`() =
@@ -1766,7 +1930,8 @@ class FormatterTest {
       |    println(b)
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `if statement with else`() =
@@ -1779,7 +1944,8 @@ class FormatterTest {
       |    println(1)
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `if expression with else`() =
@@ -1794,7 +1960,8 @@ class FormatterTest {
       |      } else 2)
       |  return if (b) 1 else 2
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `if expression with break before else`() =
@@ -1808,7 +1975,8 @@ class FormatterTest {
       |  return if (a + b < 20) a + b
       |  else c
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -1827,7 +1995,8 @@ class FormatterTest {
       |      a + b
       |  else c
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -1845,7 +2014,8 @@ class FormatterTest {
       |        println("Everything is okay")
       |      }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `if expression with multiline condition`() =
@@ -1866,7 +2036,8 @@ class FormatterTest {
       |    bar()
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -1879,14 +2050,17 @@ class FormatterTest {
       |  myVariable =
       |      function1(4, 60, 8) + function2(57, 39, 20)
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
   fun `A program that tickled a bug in KotlinInput`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |val x = 2
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `a few variations of constructors`() =
@@ -1910,7 +2084,8 @@ class FormatterTest {
       |    number5: Int,
       |    number6: Int
       |) {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `a primary constructor without a class body `() =
@@ -1920,7 +2095,8 @@ class FormatterTest {
       |data class Foo(
       |    val number: Int = 0
       |)
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -1933,7 +2109,8 @@ class FormatterTest {
       |      val number: Int = 0
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -1946,7 +2123,8 @@ class FormatterTest {
       |      val number: Int = 0
       |  ) {}
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -1960,7 +2138,8 @@ class FormatterTest {
       |    val title: String,
       |    val offspring2: List<Foo>
       |) {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `a constructor with keyword and many arguments over breaking to next line`() =
@@ -1974,7 +2153,8 @@ class FormatterTest {
       |    val offspring: List<Foo>,
       |    val foo: String
       |) {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `a constructor with many arguments over multiple lines`() =
@@ -1989,7 +2169,8 @@ class FormatterTest {
       |    val title: String,
       |    val offspring: List<Foo>
       |) {}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2002,7 +2183,8 @@ class FormatterTest {
       |    println("built")
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `a secondary constructor with many arguments over multiple lines`() =
@@ -2018,7 +2200,8 @@ class FormatterTest {
       |      val offspring: List<Foo>
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2041,7 +2224,8 @@ class FormatterTest {
       |      offspring,
       |      offspring)
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2056,7 +2240,8 @@ class FormatterTest {
       |          Foo.createSpeciallyDesignedParameter(),
       |      )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2073,7 +2258,8 @@ class FormatterTest {
       |    init(attrs)
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle calling super constructor in secondary constructor`() =
@@ -2082,7 +2268,8 @@ class FormatterTest {
       |class Foo : Bar {
       |  internal constructor(number: Int) : super(number) {}
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle super statement with with type argument`() =
@@ -2093,7 +2280,8 @@ class FormatterTest {
       |    super<FooBar>.doIt()
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle super statement with with label argument`() =
@@ -2109,7 +2297,8 @@ class FormatterTest {
       |    }
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `primary constructor without parameters with a KDoc`() =
@@ -2118,12 +2307,16 @@ class FormatterTest {
       |class Class
       |/** A comment */
       |constructor() {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
-  fun `handle objects`() = assertFormatted("""
+  fun `handle objects`() =
+      assertFormatted(
+          """
       |object Foo(n: Int) {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle object expression`() =
@@ -2132,7 +2325,8 @@ class FormatterTest {
       |fun f(): Any {
       |  return object : Adapter() {}
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle object expression in parenthesis`() =
@@ -2141,7 +2335,8 @@ class FormatterTest {
       |fun f(): Any {
       |  return (object : Adapter() {})
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle array indexing operator`() =
@@ -2151,7 +2346,8 @@ class FormatterTest {
       |  a[3]
       |  b[3, 4]
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `keep array indexing grouped with expression is possible`() =
@@ -2172,7 +2368,8 @@ class FormatterTest {
       |      .foobar[1, 2, 3]
       |      .barfoo[3, 2, 1]
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2194,7 +2391,8 @@ class FormatterTest {
       |      .foobar[1, 2, 3]
       |      .barfoo[3, 2, 1]
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2211,7 +2409,8 @@ class FormatterTest {
       |      oneTwoThreeFourFiveSixSeven(
       |          foo, bar, zed, boo)
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
   @Test
   fun `chains with derferences and array indexing`() =
@@ -2227,7 +2426,8 @@ class FormatterTest {
       |      .feep[1]
       |      as Boo
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2242,7 +2442,8 @@ class FormatterTest {
       |        println(it)
       |      }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2255,7 +2456,8 @@ class FormatterTest {
       |    println(it)
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2281,7 +2483,8 @@ class FormatterTest {
       |  FooFoo.foooooooo()
       |      .foooooooo()
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2298,7 +2501,8 @@ class FormatterTest {
       |          .someItems[0]
       |          .doIt()
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2313,7 +2517,8 @@ class FormatterTest {
       |                    somePropertiesProvider, somePropertyCallbacks]
       |                .also { _somePropertyWithBackingOne = it }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `array access in middle of chain and end of it behaves similarly`() =
@@ -2328,7 +2533,8 @@ class FormatterTest {
       |    println()
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2340,13 +2546,16 @@ class FormatterTest {
       |}
       |
       |fun doItWithNulls(a: String, b: String?) {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `nullable function type`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |var listener: ((Boolean) -> Unit)? = null
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `redundant parenthesis in function types`() =
@@ -2355,7 +2564,8 @@ class FormatterTest {
       |val a: (Int) = 7
       |
       |var listener: ((Boolean) -> Unit) = foo
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle string literals`() =
@@ -2366,7 +2576,8 @@ class FormatterTest {
       |  println("Hello! ${'$'}world")
       |  println("Hello! ${'$'}{"wor" + "ld"}")
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle multiline string literals`() =
@@ -2376,7 +2587,8 @@ class FormatterTest {
       |  println(${"\"".repeat(3)}Hello
       |      world!${"\"".repeat(3)})
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `Trailing whitespaces are preserved in multiline strings`() {
@@ -2401,13 +2613,14 @@ class FormatterTest {
   fun `Consecutive line breaks in multiline strings are preserved`() =
       assertFormatted(
           """
-      |val x = ""${'"'}
+      |val x = $TQ
       |
       |
       |
       |Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-      |""${'"'}
-      |""".trimMargin())
+      |$TQ
+      |"""
+              .trimMargin())
 
   @Test
   fun `Trailing spaces in a comment are not preserved`() {
@@ -2419,11 +2632,13 @@ class FormatterTest {
 
   @Test
   fun `Code with tombstones is not supported`() {
-    val code = """
+    val code =
+        """
       |fun good() {
       |  // ${'\u0003'}
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     try {
       Formatter.format(code)
       fail()
@@ -2444,7 +2659,8 @@ class FormatterTest {
       |}
       |
       |class Foo<T>
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle for loops`() =
@@ -2455,7 +2671,8 @@ class FormatterTest {
       |    println(i)
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle for loops with long dot chains`() =
@@ -2476,7 +2693,8 @@ class FormatterTest {
       |    println(child)
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2494,7 +2712,8 @@ class FormatterTest {
       |        number = 2 * number
       |      }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2512,7 +2731,8 @@ class FormatterTest {
       |        number = 2 * number
       |      }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2527,7 +2747,8 @@ class FormatterTest {
       |      }
       |      .methodCall()
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `keep last expression in qualified indented`() =
@@ -2543,7 +2764,8 @@ class FormatterTest {
       |          Foo.doIt()
       |              .doThat())
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2560,7 +2782,8 @@ class FormatterTest {
       |    red.orange.yellow()
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2590,7 +2813,8 @@ class FormatterTest {
       |    red.orange.yellow()
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2622,7 +2846,8 @@ class FormatterTest {
       |  red.orange.yellow()
       |  // this is a comment
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2646,7 +2871,8 @@ class FormatterTest {
       |        action2()
       |      }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2663,7 +2889,8 @@ class FormatterTest {
       |          foo1, foo2, foo3)
       |      .doThat()
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2680,7 +2907,8 @@ class FormatterTest {
       |        doStuff()
       |      }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2701,7 +2929,8 @@ class FormatterTest {
       |        a + a
       |      })
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `Qualified type`() =
@@ -2712,7 +2941,8 @@ class FormatterTest {
       |  var x: Map.Entry<String, Integer>
       |  var x: List<String>.Iterator
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle destructuring declaration in for loop`() =
@@ -2721,7 +2951,8 @@ class FormatterTest {
       |fun f(a: List<Pair<Int, Int>>) {
       |  for ((x, y: Int) in a) {}
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle function references`() =
@@ -2744,7 +2975,8 @@ class FormatterTest {
       |      invoke(a, b, c)::
       |          functionName
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2762,7 +2994,8 @@ class FormatterTest {
       |}
       |
       |class `more spaces`
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle annotations with arguments`() =
@@ -2777,7 +3010,8 @@ class FormatterTest {
       |class Test {
       |  //
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `no newlines after annotations if entire expr fits in one line`() =
@@ -2834,7 +3068,8 @@ class FormatterTest {
       |    println("")
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2845,7 +3080,8 @@ class FormatterTest {
       |@Suppress("UnsafeCast")
       |val ClassA.methodA
       |  get() = foo as Bar
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2858,7 +3094,8 @@ class FormatterTest {
       |  @LongLongLongLongLongAnnotation
       |  private val ROW_HEIGHT = 72
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -2866,7 +3103,8 @@ class FormatterTest {
       assertFormatted(
           """
       |val callback: (@Anno List<@JvmSuppressWildcards String>) -> Unit = foo
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `annotations on type parameters`() =
@@ -2875,7 +3113,8 @@ class FormatterTest {
       |class Foo<@Anno out @Anno T, @Anno in @Anno U> {
       |  inline fun <@Anno reified @Anno X, @Anno reified @Anno Y> bar() {}
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `annotations on type constraints`() =
@@ -2884,19 +3123,24 @@ class FormatterTest {
       |class Foo<T : @Anno Kip, U> where U : @Anno Kip, U : @Anno Qux {
       |  fun <T : @Anno Kip, U> bar() where U : @Anno Kip, U : @Anno Qux {}
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `annotations on type arguments`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |fun foo(x: Foo<in @Anno Int>) {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `annotations on destructuring declaration elements`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |val x = { (@Anno x, @Anno y) -> x }
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `annotations on exceptions`() =
@@ -2909,7 +3153,8 @@ class FormatterTest {
       |    //
       |  } catch (@Suppress("GeneralException") e: Exception) {}
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `Unary prefix expressions`() =
@@ -2940,7 +3185,8 @@ class FormatterTest {
       |  !++a
       |  !--a
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `Unary postfix expressions`() =
@@ -2956,7 +3202,8 @@ class FormatterTest {
       |
       |  a!! !!
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle wildcard generics`() =
@@ -2966,39 +3213,59 @@ class FormatterTest {
       |  val l: List<*>
       |  val p: Pair<*, *>
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
+
+  @Test
+  fun `handle intersection generics`() =
+      assertFormatted(
+          """
+      |fun f() {
+      |  val l: Decl<A & B & C>
+      |  val p = Ctor<A & B & C, T & Y & Z>
+      |}
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle covariant and contravariant type arguments`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |val p: Pair<in T, out S>
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle covariant and contravariant type parameters`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |class Foo<in T, out S>
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle bounds for type parameters`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |class Foo<in T : List<*>, out S : Any?>
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle compound generic bounds on classes`() =
       assertFormatted(
           """
       |class Foo<T>(n: Int) where T : Bar, T : FooBar {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle compound generic bounds on functions`() =
       assertFormatted(
           """
       |fun <T> foo(n: Int) where T : Bar, T : FooBar {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle compound generic bounds on properties`() =
@@ -3008,7 +3275,8 @@ class FormatterTest {
       |  get() {
       |    return 2 * sum()
       |  }
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle compound generic bounds on class with delegate`() =
@@ -3016,7 +3284,8 @@ class FormatterTest {
           """
       |class Foo<T>() : Bar by bar
       |where T : Qux
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `explicit type on property getter`() =
@@ -3026,7 +3295,8 @@ class FormatterTest {
       |  val silly: Int
       |    get(): Int = 1
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle method calls with lambda arg only`() =
@@ -3035,7 +3305,8 @@ class FormatterTest {
       |fun f() {
       |  val a = g { 1 + 1 }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle method calls value args and a lambda arg`() =
@@ -3044,7 +3315,8 @@ class FormatterTest {
       |fun f() {
       |  val a = g(1, 2) { 1 + 1 }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle top level constants`() =
@@ -3056,7 +3328,8 @@ class FormatterTest {
       |const val b = "a"
       |
       |val a = 5
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -3066,7 +3339,8 @@ class FormatterTest {
       |fun f() {
       |  val b = { x: Int, y: Int -> x + y }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `avoid newline before lambda argument if it is named`() =
@@ -3078,9 +3352,12 @@ class FormatterTest {
       |      lambdaArgument = {
       |        step1()
       |        step2()
-      |      }) { it.doIt() }
+      |      }) {
+      |        it.doIt()
+      |      }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle labeled this pointer`() =
@@ -3091,13 +3368,16 @@ class FormatterTest {
       |    g { println(this@Foo) }
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle extension and operator functions`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |operator fun Point.component1() = x
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle extension methods with very long names`() =
@@ -3111,7 +3391,8 @@ class FormatterTest {
       |    n: Int,
       |    f: Float
       |) {}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -3120,13 +3401,16 @@ class FormatterTest {
           """
       |val Int.isPrime: Boolean
       |  get() = runMillerRabinPrimality(this)
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `generic extension property`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |val <T> List<T>.twiceSize = 2 * size()
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle file annotations`() =
@@ -3141,7 +3425,8 @@ class FormatterTest {
       |class Foo {
       |  val a = example2("and 1")
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle init block`() =
@@ -3152,20 +3437,24 @@ class FormatterTest {
       |    println("Init!")
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle interface delegation`() =
       assertFormatted(
           """
       |class MyList(impl: List<Int>) : Collection<Int> by impl
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle property delegation`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |val a by lazy { 1 + 1 }
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle property delegation with type and breaks`() =
@@ -3186,7 +3475,8 @@ class FormatterTest {
       |
       |val importantValue: Int by
       |    doIt(1 + 1)
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -3205,7 +3495,8 @@ class FormatterTest {
     |  var httpClient: OkHttpClient
     |}
     |
-    """.trimMargin())
+    """
+              .trimMargin())
 
   @Test
   fun `handle parameters with annoations with parameters`() =
@@ -3217,7 +3508,8 @@ class FormatterTest {
     |  }
     |}
     |
-    """.trimMargin())
+    """
+              .trimMargin())
 
   @Test
   fun `handle lambda types`() =
@@ -3230,13 +3522,16 @@ class FormatterTest {
       |val listener3: (Int, Double) -> Int = { a, b -> a }
       |
       |val listener4: Int.(Int, Boolean) -> Unit
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle unicode in string literals`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |val a = "\uD83D\uDC4D"
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle casting`() =
@@ -3248,7 +3543,8 @@ class FormatterTest {
       |  doIt(o as Int)
       |  doIt(o as? Int)
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle casting with breaks`() =
@@ -3294,7 +3590,8 @@ class FormatterTest {
       |val a =
       |    l.sOrNull() is
       |        SomethingLongEnough
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -3305,7 +3602,8 @@ class FormatterTest {
       |fun doIt(o: Object) {
       |  //
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle try, catch and finally`() =
@@ -3320,7 +3618,8 @@ class FormatterTest {
       |    println("finally")
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle infix methods`() =
@@ -3329,7 +3628,8 @@ class FormatterTest {
       |fun numbers() {
       |  (0 until 100).size
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle while loops`() =
@@ -3340,7 +3640,8 @@ class FormatterTest {
       |    println("Everything is okay")
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle do while loops`() =
@@ -3353,7 +3654,8 @@ class FormatterTest {
       |
       |  do while (1 < 2)
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle break and continue`() =
@@ -3369,7 +3671,8 @@ class FormatterTest {
       |    }
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle all kinds of labels and jumps`() =
@@ -3391,7 +3694,8 @@ class FormatterTest {
       |    return@map 2 * it
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `don't crash on top level statements with semicolons`() {
@@ -3404,7 +3708,8 @@ class FormatterTest {
       |foo { 0 };
       |
       |val fill = 0;
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |val x = { 0 }
@@ -3414,7 +3719,8 @@ class FormatterTest {
       |foo { 0 }
       |
       |val fill = 0
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -3431,7 +3737,8 @@ class FormatterTest {
       |
       |  fun isOne(): Boolean = this == ONE
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |enum class SemiColonIsNotRequired {
@@ -3445,7 +3752,8 @@ class FormatterTest {
       |
       |  fun isOne(): Boolean = this == ONE
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -3455,24 +3763,26 @@ class FormatterTest {
         """
       |fun f() {
       |  val x = ";"
-      |  val x = ""${'"'}  don't touch ; in raw strings ""${'"'}
+      |  val x = $TQ  don't touch ; in raw strings $TQ
       |}
       |
       |// Don't touch ; inside comments.
       |
       |/** Don't touch ; inside comments. */
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |fun f() {
       |  val x = ";"
-      |  val x = ""${'"'}  don't touch ; in raw strings ""${'"'}
+      |  val x = $TQ  don't touch ; in raw strings $TQ
       |}
       |
       |// Don't touch ; inside comments.
       |
       |/** Don't touch ; inside comments. */
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -3491,7 +3801,8 @@ class FormatterTest {
       |    else
       |  ;
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |fun f() {
@@ -3503,11 +3814,12 @@ class FormatterTest {
       |  if (true) ;
       |  if (true)
       |  /** a */
-      |  ;
+      |   ;
       |
       |  if (true)  else ;
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -3539,7 +3851,8 @@ class FormatterTest {
       |  // Literally any callable expression is dangerous
       |  val x = (if (cond) x::foo else x::bar); { dead -> lambda }
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |fun f() {
@@ -3579,7 +3892,8 @@ class FormatterTest {
       |  val x = (if (cond) x::foo else x::bar);
       |  { dead -> lambda }
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -3603,9 +3917,11 @@ class FormatterTest {
       |  someLongVariableName.let {
       |    someReallyLongFunctionNameThatMakesThisNotFitInOneLineWithTheAboveVariable();
       |  }
+      |  if (cond) ; else 6
       |} ;
       |
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |package org.examples
@@ -3630,24 +3946,29 @@ class FormatterTest {
       |  someLongVariableName.let {
       |    someReallyLongFunctionNameThatMakesThisNotFitInOneLineWithTheAboveVariable()
       |  }
+      |  if (cond)  else 6
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
   @Test
   fun `pretty-print after dropping redundant semicolons`() {
-    val code = """
+    val code =
+        """
       |fun f() {
       |  val veryLongName = 5;
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |fun f() {
       |  val veryLongName = 5
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).withOptions(FormattingOptions(maxWidth = 22)).isEqualTo(expected)
   }
 
@@ -3658,7 +3979,8 @@ class FormatterTest {
       |fun f() {
       |  a { println("a") }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle multi statement lambdas`() =
@@ -3670,7 +3992,8 @@ class FormatterTest {
       |    println("b")
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle multi line one statement lambda`() =
@@ -3682,7 +4005,8 @@ class FormatterTest {
       |    println(foo.bar.boom)
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -3695,7 +4019,8 @@ class FormatterTest {
       |    return
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `properly break fully qualified nested user types`() =
@@ -3710,7 +4035,8 @@ class FormatterTest {
       |                Int, Nothing>,
       |            Nothing>> =
       |    DUMMY
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -3740,7 +4066,8 @@ class FormatterTest {
       |        .sum
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle multi line lambdas with explicit args`() =
@@ -3752,7 +4079,8 @@ class FormatterTest {
       |    x + y
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -3763,7 +4091,8 @@ class FormatterTest {
       |  g { (a, b): List<Int> -> a }
       |  g { (a, b): List<Int>, (c, d): List<Int> -> a }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle parenthesis in lambda calls for now`() =
@@ -3772,7 +4101,8 @@ class FormatterTest {
       |fun f() {
       |  a() { println("a") }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle chaining of calls with lambdas`() =
@@ -3788,7 +4118,8 @@ class FormatterTest {
       |      }
       |      .sum
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle break of lambda args per line with indentation`() =
@@ -3812,7 +4143,8 @@ class FormatterTest {
       |    doIt()
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -3830,7 +4162,8 @@ class FormatterTest {
       |    doIt()
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -3845,7 +4178,8 @@ class FormatterTest {
         |      .find { it.contains(someSearchValue) }
         |      ?: someDefaultValue
         |}
-        |""".trimMargin(),
+        |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -3861,7 +4195,8 @@ class FormatterTest {
         |      // this is a comment
         |      .doItTwice()
         |}
-        |""".trimMargin(),
+        |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -3875,7 +4210,8 @@ class FormatterTest {
       |inline fun <reified in T> foo2(t: T) {
       |  println(t)
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle suspended types`() =
@@ -3888,7 +4224,8 @@ class FormatterTest {
       |inline fun <R> foo(noinline block: suspend () -> R): suspend () -> R
       |
       |inline fun <R> bar(noinline block: (suspend () -> R)?): (suspend () -> R)?
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle simple enum classes`() =
@@ -3899,7 +4236,8 @@ class FormatterTest {
       |  FALSE,
       |  FILE_NOT_FOUND,
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle enum class with functions`() =
@@ -3913,7 +4251,8 @@ class FormatterTest {
       |    return true
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle enum with annotations`() =
@@ -3923,7 +4262,8 @@ class FormatterTest {
       |  @True TRUE,
       |  @False @WhatIsTruth FALSE,
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle enum constructor calls`() =
@@ -3933,7 +4273,8 @@ class FormatterTest {
       |  TRUE("true"),
       |  FALSE("false", false),
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle enum entries with body`() =
@@ -3945,20 +4286,25 @@ class FormatterTest {
       |  },
       |  FISH(false) {},
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle empty enum`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |enum class YTho {
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `expect enum class`() =
-      assertFormatted("""
+      assertFormatted(
+          """
       |expect enum class ExpectedEnum
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `enum without trailing comma`() =
@@ -3967,7 +4313,8 @@ class FormatterTest {
       |enum class Highlander {
       |  ONE
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `enum comma and semicolon`() {
@@ -3976,13 +4323,15 @@ class FormatterTest {
         |enum class Highlander {
         |  ONE,;
         |}
-        |""".trimMargin())
+        |"""
+                .trimMargin())
         .isEqualTo(
             """
         |enum class Highlander {
         |  ONE,
         |}
-        |""".trimMargin())
+        |"""
+                .trimMargin())
   }
 
   @Test
@@ -3996,7 +4345,8 @@ class FormatterTest {
         |
         |  fun f() {}
         |}
-        |""".trimMargin())
+        |"""
+              .trimMargin())
 
   @Test
   fun `handle varargs and spread operator`() =
@@ -4006,7 +4356,8 @@ class FormatterTest {
       |  foo2(*args)
       |  foo3(options = *args)
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle typealias`() =
@@ -4019,7 +4370,8 @@ class FormatterTest {
       |typealias PairPair<X, Y> = Pair<Pair<X, Y>, X>
       |
       |class Foo
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -4029,7 +4381,8 @@ class FormatterTest {
       |fun x(): dynamic = "x"
       |
       |val dyn: dynamic = 1
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle class expression with generics`() =
@@ -4038,7 +4391,8 @@ class FormatterTest {
       |fun f() {
       |  println(Array<String>::class.java)
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `ParseError contains correct line and column numbers`() {
@@ -4050,7 +4404,8 @@ class FormatterTest {
       |}
       |
       |fn (
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     try {
       Formatter.format(code)
       fail()
@@ -4069,7 +4424,8 @@ class FormatterTest {
       |fun good() {
       |  return@ 5
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     try {
       Formatter.format(code)
       fail()
@@ -4090,7 +4446,8 @@ class FormatterTest {
       |    return (@Fancy 1)
       |  }
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `annotations on function types`() =
@@ -4113,7 +4470,8 @@ class FormatterTest {
       |        (@field:[Inject Named("WEB_VIEW")]
       |        (x) -> Unit)
       |) {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle annotations with use-site targets`() =
@@ -4124,7 +4482,8 @@ class FormatterTest {
       |
       |  @set:Magic(name = "Jane") var field: String
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle annotations mixed with keywords since we cannot reorder them for now`() =
@@ -4135,7 +4494,8 @@ class FormatterTest {
       |public @Magic(1) final class Foo
       |
       |@Magic(1) public final class Foo
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle annotations more`() =
@@ -4154,7 +4514,8 @@ class FormatterTest {
       |  @Annotation // test a comment after annotations
       |  return 5
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -4191,7 +4552,8 @@ class FormatterTest {
       |      add(20) &&
       |      add(30)
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -4207,7 +4569,8 @@ class FormatterTest {
       |fun f() {
       |  add(10)
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `annotated class declarations`() =
@@ -4221,14 +4584,16 @@ class FormatterTest {
       |// Foo
       |@Anno("param")
       |class F
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle type arguments in annotations`() =
       assertFormatted(
           """
       |@TypeParceler<UUID, UUIDParceler>() class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle one line KDoc`() =
@@ -4236,7 +4601,8 @@ class FormatterTest {
           """
       |/** Hi, I am a one line kdoc */
       |class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle KDoc with Link`() =
@@ -4244,7 +4610,8 @@ class FormatterTest {
           """
       |/** This links to [AnotherClass] */
       |class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle KDoc with paragraphs`() =
@@ -4256,7 +4623,8 @@ class FormatterTest {
       | * There's a space line to preserve between them
       | */
       |class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle KDoc with blocks`() =
@@ -4269,7 +4637,8 @@ class FormatterTest {
       | * @param[param2] this is param2
       | */
       |class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle KDoc with code examples`() =
@@ -4277,7 +4646,6 @@ class FormatterTest {
           """
       |/**
       | * This is how you write a simple hello world in Kotlin:
-      | *
       | * ```
       | * fun main(args: Array<String>) {
       | *   println("Hello World!")
@@ -4285,13 +4653,16 @@ class FormatterTest {
       | * ```
       | *
       | * Amazing ah?
+      | *
       | * ```
       | * fun `code can be with a blank line above it` () {}
       | * ```
+      | *
       | * Or after it!
       | */
       |class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle KDoc with tagged code examples`() =
@@ -4305,7 +4676,8 @@ class FormatterTest {
       | * ```
       | */
       |class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle stray code markers in lines and produce stable output`() {
@@ -4318,7 +4690,8 @@ class FormatterTest {
       | * ```
       | */
       |class MyClass {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertFormatted(Formatter.format(code))
   }
 
@@ -4333,7 +4706,8 @@ class FormatterTest {
       | * ```
       | */
       |class MyClass {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |/**
@@ -4343,7 +4717,8 @@ class FormatterTest {
       | * ```
       | */
       |class MyClass {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -4357,7 +4732,8 @@ class FormatterTest {
       | * foo ``` wow
       | */
       |class MyClass {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertFormatted(Formatter.format(code))
   }
 
@@ -4367,7 +4743,8 @@ class FormatterTest {
           """
       |/** Doc line with a reference to [AnotherClass] in the middle of a sentence */
       |class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle KDoc with links one after another`() =
@@ -4375,7 +4752,8 @@ class FormatterTest {
           """
       |/** Here are some links [AnotherClass] [AnotherClass2] */
       |class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `don't add spaces after links in Kdoc`() =
@@ -4383,7 +4761,8 @@ class FormatterTest {
           """
       |/** Here are some links [AnotherClass][AnotherClass2]hello */
       |class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `don't remove spaces after links in Kdoc`() =
@@ -4391,7 +4770,8 @@ class FormatterTest {
           """
       |/** Please see [onNext] (which has more details) */
       |class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `link anchor in KDoc are preserved`() =
@@ -4399,7 +4779,8 @@ class FormatterTest {
           """
       |/** [link anchor](the URL for the link anchor goes here) */
       |class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `don't add spaces between links in KDoc (because they're actually references)`() =
@@ -4410,7 +4791,8 @@ class FormatterTest {
       |
       |/** The final produced value may have [size][ByteString.size] < [bufferSize]. */
       |class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `collapse spaces after links in KDoc`() {
@@ -4418,12 +4800,14 @@ class FormatterTest {
         """
       |/** Here are some links [Class1], [Class2]   [Class3]. hello */
       |class MyClass {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |/** Here are some links [Class1], [Class2] [Class3]. hello */
       |class MyClass {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -4436,21 +4820,25 @@ class FormatterTest {
       | * [Class2]
       | */
       |class MyClass {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |/** Here are some links [Class1] [Class2] */
       |class MyClass {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
   @Test
   fun `do not crash because of malformed KDocs and produce stable output`() {
-    val code = """
+    val code =
+        """
       |/** Surprise ``` */
       |class MyClass {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertFormatted(Formatter.format(code))
   }
 
@@ -4463,7 +4851,8 @@ class FormatterTest {
       |
       |/** There are many [FooObject]s. */
       |class MyClass {}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `handle KDoc with multiple separated param tags, breaking and merging lines and missing asterisk`() {
@@ -4484,7 +4873,8 @@ class FormatterTest {
       | * @see kotlin.text.isWhitespace
       | */
       |class ThisWasCopiedFromTheTrimMarginMethod {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |/**
@@ -4497,14 +4887,14 @@ class FormatterTest {
       | * Doesn't preserve the original line endings.
       | *
       | * @param marginPrefix non-blank string, which is used as a margin delimiter. Default is `|` (pipe
-      | * character).
-      | *
+      | *   character).
       | * @sample samples.text.Strings.trimMargin
       | * @see trimIndent
       | * @see kotlin.text.isWhitespace
       | */
       |class ThisWasCopiedFromTheTrimMarginMethod {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(expected)
   }
 
@@ -4514,7 +4904,8 @@ class FormatterTest {
         """
       |/** Lorem ipsum dolor sit amet, consectetur */
       |class MyClass {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     val expected =
         """
       |/**
@@ -4522,7 +4913,8 @@ class FormatterTest {
       | * consectetur
       | */
       |class MyClass {}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
     assertThatFormatting(code).withOptions(FormattingOptions(maxWidth = 33)).isEqualTo(expected)
   }
 
@@ -4537,7 +4929,8 @@ class FormatterTest {
         |        println(child)
         |    }
         |}
-        |""".trimMargin()
+        |"""
+            .trimMargin()
     assertThatFormatting(code)
         .withOptions(FormattingOptions(maxWidth = 35, blockIndent = 4, continuationIndent = 4))
         .isEqualTo(code)
@@ -4550,7 +4943,8 @@ class FormatterTest {
       |fun doIt() {}
       |
       |/* this is the first comment */
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `preserve LF, CRLF and CR line endings`() {
@@ -4579,7 +4973,8 @@ class FormatterTest {
       |    a: Int,
       |    b: Int
       |)
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -4603,7 +4998,8 @@ class FormatterTest {
       |    a: Int,
       |    b: Int
       |)
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -4630,7 +5026,8 @@ class FormatterTest {
       |      b: Int
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -4666,7 +5063,8 @@ class FormatterTest {
       |    b: Int,
       |    c: Int,
       |) {}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -4706,7 +5104,8 @@ class FormatterTest {
       |      3,
       |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -4718,7 +5117,8 @@ class FormatterTest {
       |  set(
       |      value,
       |  ) {}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -4732,7 +5132,8 @@ class FormatterTest {
       |            Int,
       |        ) -> Unit
       |) {}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -4741,9 +5142,12 @@ class FormatterTest {
           """
       |--------------------------
       |fun foo() {
-      |  foo({ it },)
+      |  foo(
+      |      { it },
+      |  )
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -4807,7 +5211,8 @@ class FormatterTest {
       |    //
       |  }
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -4847,7 +5252,8 @@ class FormatterTest {
       |      foo()
       |      //
       |    }
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -4884,7 +5290,8 @@ class FormatterTest {
       |val g = 1
       |
       |data class Qux(val foo: String)
-      |""".trimMargin(),
+      |"""
+            .trimMargin(),
         deduceMaxWidth = true)
 
     assertThatFormatting(
@@ -4893,7 +5300,8 @@ class FormatterTest {
       |import com.example.bar
       |const val SOME_CONST = foo.a
       |val SOME_STR = bar.a
-      |""".trimMargin())
+      |"""
+                .trimMargin())
         .isEqualTo(
             """
       |import com.example.bar
@@ -4901,18 +5309,23 @@ class FormatterTest {
       |
       |const val SOME_CONST = foo.a
       |val SOME_STR = bar.a
-      |""".trimMargin())
+      |"""
+                .trimMargin())
   }
 
   @Test
   fun `first line is never empty`() =
-      assertThatFormatting("""
+      assertThatFormatting(
+              """
       |
       |fun f() {}
-      |""".trimMargin())
-          .isEqualTo("""
+      |"""
+                  .trimMargin())
+          .isEqualTo(
+              """
       |fun f() {}
-      |""".trimMargin())
+      |"""
+                  .trimMargin())
 
   @Test
   fun `at most one newline between any adjacent top-level elements`() =
@@ -4940,7 +5353,8 @@ class FormatterTest {
       |
       |
       |val x = Bar()
-      |""".trimMargin())
+      |"""
+                  .trimMargin())
           .isEqualTo(
               """
       |import com.Bar
@@ -4957,7 +5371,8 @@ class FormatterTest {
       |val x = Foo()
       |
       |val x = Bar()
-      |""".trimMargin())
+      |"""
+                  .trimMargin())
 
   @Test
   fun `at least one newline between any adjacent top-level elements, unless it's a property`() =
@@ -4971,7 +5386,8 @@ class FormatterTest {
       |class C {}
       |val x = Foo()
       |val x = Bar()
-      |""".trimMargin())
+      |"""
+                  .trimMargin())
           .isEqualTo(
               """
       |import com.Bar
@@ -4987,7 +5403,8 @@ class FormatterTest {
       |
       |val x = Foo()
       |val x = Bar()
-      |""".trimMargin())
+      |"""
+                  .trimMargin())
 
   @Test
   fun `handle array of annotations with field prefix`() {
@@ -4998,7 +5415,8 @@ class FormatterTest {
     |  var myVar: String? = null
     |}
     |
-    """.trimMargin()
+    """
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(code)
   }
 
@@ -5011,7 +5429,8 @@ class FormatterTest {
     |  var myVar: String? = null
     |}
     |
-    """.trimMargin()
+    """
+            .trimMargin()
     assertThatFormatting(code).isEqualTo(code)
   }
 
@@ -5031,7 +5450,8 @@ class FormatterTest {
       |    }
       |  }
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
 
     // Don't throw.
     Formatter.format(code)
@@ -5047,7 +5467,8 @@ class FormatterTest {
       |  val y = 0
       |  y
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `lambda with optional arrow`() =
@@ -5059,7 +5480,8 @@ class FormatterTest {
       |  val y = 0
       |  y
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `lambda missing optional arrow`() =
@@ -5071,7 +5493,8 @@ class FormatterTest {
       |  val y = 0
       |  y
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `chaining - many dereferences`() =
@@ -5086,7 +5509,8 @@ class FormatterTest {
       |    .cyan
       |    .magenta
       |    .key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5095,7 +5519,8 @@ class FormatterTest {
           """
       |---------------------------------------------------------------------------
       |rainbow.red.orange.yellow.green.blue.indigo.violet.cyan.magenta.key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5112,7 +5537,8 @@ class FormatterTest {
       |    .magenta
       |    .key
       |    .build()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5121,7 +5547,8 @@ class FormatterTest {
           """
       |---------------------------------------------------------------------------
       |rainbow.red.orange.yellow.green.blue.indigo.violet.cyan.magenta.key.build()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5139,7 +5566,8 @@ class FormatterTest {
       |    .key
       |    .build()
       |    .shine()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5156,7 +5584,8 @@ class FormatterTest {
       |    .cyan
       |    .magenta
       |    .key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5174,7 +5603,8 @@ class FormatterTest {
       |    .cyan
       |    .magenta
       |    .key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5191,7 +5621,8 @@ class FormatterTest {
       |    .magenta
       |    .key
       |    .build { it.appear }
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5208,7 +5639,8 @@ class FormatterTest {
       |    .magenta
       |    .key
       |    .z { it }
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5228,7 +5660,8 @@ class FormatterTest {
       |      it
       |      it
       |    }
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5245,7 +5678,8 @@ class FormatterTest {
       |    .cyan
       |    .magenta
       |    .key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5265,7 +5699,8 @@ class FormatterTest {
       |    .cyan
       |    .magenta
       |    .key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5283,7 +5718,8 @@ class FormatterTest {
       |    .cyan
       |    .magenta
       |    .key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5303,7 +5739,8 @@ class FormatterTest {
       |    .cyan
       |    .magenta
       |    .key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5321,7 +5758,8 @@ class FormatterTest {
       |    .key
       |    .z { it }
       |    .shine()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5342,7 +5780,8 @@ class FormatterTest {
       |      it
       |    }
       |    .shine()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5360,7 +5799,8 @@ class FormatterTest {
       |    .key
       |    .shine()
       |    .z { it }
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5378,7 +5818,8 @@ class FormatterTest {
       |    .cyan
       |    .magenta
       |    .key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5396,7 +5837,8 @@ class FormatterTest {
       |    .cyan
       |    .magenta
       |    .key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5412,7 +5854,8 @@ class FormatterTest {
       |    .cyan
       |    .magenta
       |    .key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5429,7 +5872,8 @@ class FormatterTest {
       |    .magenta
       |    .key
       |    .build()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5445,7 +5889,8 @@ class FormatterTest {
       |    .cyan
       |    .magenta
       |    .key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5462,7 +5907,8 @@ class FormatterTest {
       |    .magenta
       |    .key
       |    .build()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5478,7 +5924,8 @@ class FormatterTest {
       |    .cyan
       |    .magenta
       |    .key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5495,7 +5942,8 @@ class FormatterTest {
       |    .magenta
       |    .key
       |    .build()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5515,7 +5963,8 @@ class FormatterTest {
       |    .magenta
       |    .key
       |    .shine()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5535,7 +5984,8 @@ class FormatterTest {
       |    .magenta
       |    .key
       |    .shine()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5544,7 +5994,8 @@ class FormatterTest {
           """
       |-------------------------
       |rainbow.a().b().c()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5556,7 +6007,8 @@ class FormatterTest {
       |  it
       |  it
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5574,7 +6026,8 @@ class FormatterTest {
       |    .cyan
       |    .magenta
       |    .key
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5585,7 +6038,8 @@ class FormatterTest {
       |z12.shine()
       |    .bright()
       |    .z { it }
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5596,7 +6050,8 @@ class FormatterTest {
       |getRainbow(
       |        aa, bb, cc)
       |    .z { it }
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5607,7 +6062,8 @@ class FormatterTest {
       |z { it }
       |    .shine()
       |    .bright()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5618,7 +6074,8 @@ class FormatterTest {
       |com.sky.Rainbow
       |    .colorFactory
       |    .build()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5630,7 +6087,8 @@ class FormatterTest {
       |  it
       |  it
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5644,7 +6102,8 @@ class FormatterTest {
       |      it
       |    }
       |    .red
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5657,7 +6116,8 @@ class FormatterTest {
       |      it
       |      it
       |    }
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5671,7 +6131,8 @@ class FormatterTest {
       |      it
       |    }
       |    .red
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5683,7 +6144,8 @@ class FormatterTest {
       |  it
       |  it
       |}
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5696,7 +6158,8 @@ class FormatterTest {
       |      it
       |      it
       |    }
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5710,7 +6173,8 @@ class FormatterTest {
       |      it
       |      it
       |    }
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5722,7 +6186,8 @@ class FormatterTest {
       |    infrared,
       |    ultraviolet,
       |)
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5736,7 +6201,8 @@ class FormatterTest {
       |        ultraviolet,
       |    )
       |    .red
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5749,7 +6215,8 @@ class FormatterTest {
       |        infrared,
       |        ultraviolet,
       |    )
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5763,7 +6230,8 @@ class FormatterTest {
       |        infrared,
       |        ultraviolet,
       |    )
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5778,7 +6246,8 @@ class FormatterTest {
       |        ultraviolet,
       |    )
       |    .red
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5792,7 +6261,8 @@ class FormatterTest {
       |        ultraviolet,
       |    )
       |    .bright()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5806,7 +6276,8 @@ class FormatterTest {
       |        ultraviolet,
       |    )
       |    .z { it }
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5819,7 +6290,8 @@ class FormatterTest {
       |        ultraviolet,
       |    )
       |    .bright()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5832,7 +6304,8 @@ class FormatterTest {
       |        ultraviolet,
       |    )
       |    .bright()
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5844,7 +6317,8 @@ class FormatterTest {
       |    infrared,
       |    ultraviolet,
       |)
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5857,7 +6331,8 @@ class FormatterTest {
       |        ultraviolet,
       |    )
       |    .z { it }
-      |""".trimMargin(),
+      |"""
+              .trimMargin(),
           deduceMaxWidth = true)
 
   @Test
@@ -5880,7 +6355,8 @@ class FormatterTest {
       |
       |  @Anno1 /* comment */ @Anno2 f(1) as Int
       |}
-      |""".trimMargin())
+      |"""
+              .trimMargin())
 
   @Test
   fun `annotations for expressions 2`() {
@@ -5891,7 +6367,8 @@ class FormatterTest {
       |  @Suppress("UNCHECKED_CAST")
       |  f(1 + f(1) as Int)
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
 
     val expected =
         """
@@ -5899,8 +6376,75 @@ class FormatterTest {
       |  @Suppress("UNCHECKED_CAST") f(1 + f(1) as Int)
       |  @Suppress("UNCHECKED_CAST") f(1 + f(1) as Int)
       |}
-      |""".trimMargin()
+      |"""
+            .trimMargin()
 
     assertThatFormatting(code).isEqualTo(expected)
+  }
+
+  @Test
+  fun `function call following long multiline string`() =
+      assertFormatted(
+          """
+      |--------------------------------
+      |fun f() {
+      |  val str1 =
+      |      $TQ
+      |      Some very long string that might mess things up
+      |      $TQ
+      |          .trimIndent()
+      |
+      |  val str2 =
+      |      $TQ
+      |      Some very long string that might mess things up
+      |      $TQ
+      |          .trimIndent(someArg)
+      |}
+      |"""
+              .trimMargin(),
+          deduceMaxWidth = true)
+
+  @Test
+  fun `array-literal in annotation`() =
+      assertFormatted(
+          """
+      |--------------------------------
+      |@Anno(
+      |    array =
+      |        [
+      |            someItem,
+      |            andAnother,
+      |            noTrailingComma])
+      |class Host
+      |
+      |@Anno(
+      |    array =
+      |        [
+      |            someItem,
+      |            andAnother,
+      |            withTrailingComma,
+      |        ])
+      |class Host
+      |
+      |@Anno(
+      |    array =
+      |        [
+      |            // Comment
+      |            someItem,
+      |            // Comment
+      |            andAnother,
+      |            // Comment
+      |            withTrailingComment
+      |            // Comment
+      |            // Comment
+      |            ])
+      |class Host
+      |"""
+              .trimMargin(),
+          deduceMaxWidth = true)
+
+  companion object {
+    /** Triple quotes, useful to use within triple-quoted strings. */
+    private const val TQ = "\"\"\""
   }
 }
