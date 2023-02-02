@@ -70,7 +70,6 @@ import org.jetbrains.kotlin.psi.KtFunctionType
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtImportDirective
 import org.jetbrains.kotlin.psi.KtImportList
-import org.jetbrains.kotlin.psi.KtIntersectionType
 import org.jetbrains.kotlin.psi.KtIsExpression
 import org.jetbrains.kotlin.psi.KtLabelReferenceExpression
 import org.jetbrains.kotlin.psi.KtLabeledExpression
@@ -232,27 +231,18 @@ class KotlinInputAstVisitor(
     }
   }
 
-  /** Example: `A & B`, */
-  override fun visitIntersectionType(type: KtIntersectionType) {
-    builder.sync(type)
-
-    // TODO(strulovich): Should this have the same indentation behaviour as `x && y`?
-    visit(type.getLeftTypeRef())
-    builder.space()
-    builder.token("&")
-    builder.space()
-    visit(type.getRightTypeRef())
-  }
-
   /** Example `<Int, String>` in `List<Int, String>` */
   override fun visitTypeArgumentList(typeArgumentList: KtTypeArgumentList) {
     builder.sync(typeArgumentList)
-    visitEachCommaSeparated(
-        typeArgumentList.arguments,
-        typeArgumentList.trailingComma != null,
-        prefix = "<",
-        postfix = ">",
-    )
+    builder.block(ZERO) {
+      builder.token("<")
+      builder.breakOp(Doc.FillMode.UNIFIED, "", ZERO)
+      builder.block(ZERO) {
+        emitParameterLikeList(
+            typeArgumentList.arguments, typeArgumentList.trailingComma != null, wrapInBlock = true)
+      }
+    }
+    builder.token(">")
   }
 
   override fun visitTypeProjection(typeProjection: KtTypeProjection) {
@@ -466,18 +456,7 @@ class KotlinInputAstVisitor(
           visit(selectorExpression)
         }
       }
-      receiver is KtStringTemplateExpression -> {
-        val isMultiline = receiver.text.contains('\n')
-        builder.block(if (isMultiline) expressionBreakIndent else ZERO) {
-          visit(receiver)
-          if (isMultiline) {
-            builder.forcedBreak()
-          }
-          builder.token(expression.operationSign.value)
-          visit(expression.selectorExpression)
-        }
-      }
-      receiver is KtWhenExpression -> {
+      receiver is KtWhenExpression || receiver is KtStringTemplateExpression -> {
         builder.block(ZERO) {
           visit(receiver)
           builder.token(expression.operationSign.value)
@@ -543,7 +522,6 @@ class KotlinInputAstVisitor(
               }
               val argsIndentElse = if (index == parts.size - 1) ZERO else expressionBreakIndent
               val lambdaIndentElse = if (isTrailingLambda) expressionBreakNegativeIndent else ZERO
-              val negativeLambdaIndentElse = if (isTrailingLambda) expressionBreakIndent else ZERO
 
               // emit `(1, 2) { it }` from `doIt(1, 2) { it }`
               visitCallElement(
@@ -553,7 +531,6 @@ class KotlinInputAstVisitor(
                   selectorExpression.lambdaArguments,
                   argumentsIndent = Indent.If.make(nameTag, expressionBreakIndent, argsIndentElse),
                   lambdaIndent = Indent.If.make(nameTag, ZERO, lambdaIndentElse),
-                  negativeLambdaIndent = Indent.If.make(nameTag, ZERO, negativeLambdaIndentElse),
               )
             }
           }
@@ -737,107 +714,82 @@ class KotlinInputAstVisitor(
           typeArgumentList,
           valueArgumentList,
           lambdaArguments,
-      )
+          lambdaIndent = ZERO)
     }
   }
 
-  /**
-   * Examples `foo<T>(a, b)`, `foo(a)`, `boo()`, `super(a)`
-   *
-   * @param lambdaIndent how to indent [lambdaArguments], if present
-   * @param negativeLambdaIndent the negative indentation of [lambdaIndent]
-   */
+  /** Examples `foo<T>(a, b)`, `foo(a)`, `boo()`, `super(a)` */
   private fun visitCallElement(
       callee: KtExpression?,
       typeArgumentList: KtTypeArgumentList?,
       argumentList: KtValueArgumentList?,
       lambdaArguments: List<KtLambdaArgument>,
       argumentsIndent: Indent = expressionBreakIndent,
-      lambdaIndent: Indent = ZERO,
-      negativeLambdaIndent: Indent = ZERO,
+      lambdaIndent: Indent = ZERO
   ) {
-    // Apply the lambda indent to the callee, type args, value args, and the lambda.
-    // This is undone for the first three by the negative lambda indent.
-    // This way they're in one block, and breaks in the argument list cause a break in the lambda.
-    builder.block(lambdaIndent) {
-
-      // Used to keep track of whether or not we need to indent the lambda
-      // This is based on if there is a break in the argument list
-      var brokeBeforeBrace: BreakTag? = null
-
-      builder.block(negativeLambdaIndent) {
-        visit(callee)
-        builder.block(argumentsIndent) {
-          builder.block(ZERO) { visit(typeArgumentList) }
-          if (argumentList != null) {
-            brokeBeforeBrace = visitValueArgumentListInternal(argumentList)
+    builder.block(ZERO) {
+      visit(callee)
+      val arguments = argumentList?.arguments.orEmpty()
+      builder.block(argumentsIndent) { visit(typeArgumentList) }
+      builder.block(argumentsIndent) {
+        if (argumentList != null) {
+          builder.token("(")
+        }
+        if (arguments.isNotEmpty()) {
+          if (isGoogleStyle) {
+            visit(argumentList)
+            val first = arguments.first()
+            if (arguments.size != 1 ||
+                first?.isNamed() != false ||
+                first.getArgumentExpression() !is KtLambdaExpression) {
+              builder.breakOp(Doc.FillMode.UNIFIED, "", expressionBreakNegativeIndent)
+            }
+          } else {
+            builder.block(ZERO) { visit(argumentList) }
           }
         }
+        if (argumentList != null) {
+          builder.token(")")
+        }
       }
+      val hasTrailingComma = argumentList?.trailingComma != null
       if (lambdaArguments.isNotEmpty()) {
         builder.space()
-        visitArgumentInternal(
-            lambdaArguments.single(),
-            wrapInBlock = false,
-            brokeBeforeBrace = brokeBeforeBrace,
-        )
+        builder.block(lambdaIndent) {
+          lambdaArguments.forEach {
+            visitArgumentInternal(it, forceBreakLambdaBody = hasTrailingComma)
+          }
+        }
       }
     }
   }
 
   /** Example (`1, "hi"`) in a function call */
   override fun visitValueArgumentList(list: KtValueArgumentList) {
-    visitValueArgumentListInternal(list)
-  }
-
-  /**
-   * Example (`1, "hi"`) in a function call
-   *
-   * @return a [BreakTag] which can tell you if a break was taken, but only when the list doesn't
-   * terminate in a negative closing indent. See [visitEachCommaSeparated] for examples.
-   */
-  private fun visitValueArgumentListInternal(list: KtValueArgumentList): BreakTag? {
     builder.sync(list)
-
     val arguments = list.arguments
     val isSingleUnnamedLambda =
         arguments.size == 1 &&
             arguments.first().getArgumentExpression() is KtLambdaExpression &&
             arguments.first().getArgumentName() == null
-    val hasTrailingComma = list.trailingComma != null
-
-    val wrapInBlock: Boolean
-    val breakBeforePostfix: Boolean
-    val leadingBreak: Boolean
-    val breakAfterPrefix: Boolean
-
     if (isSingleUnnamedLambda) {
-      wrapInBlock = true
-      breakBeforePostfix = false
-      leadingBreak = arguments.isNotEmpty() && hasTrailingComma
-      breakAfterPrefix = false
+      builder.block(expressionBreakNegativeIndent) {
+        visit(arguments.first())
+        if (list.trailingComma != null) {
+          builder.token(",")
+        }
+      }
     } else {
-      wrapInBlock = !isGoogleStyle
-      breakBeforePostfix = isGoogleStyle && arguments.isNotEmpty()
-      leadingBreak = arguments.isNotEmpty()
-      breakAfterPrefix = arguments.isNotEmpty()
+      // Break before args.
+      builder.breakOp(Doc.FillMode.UNIFIED, "", ZERO)
+      emitParameterLikeList(
+          list.arguments, list.trailingComma != null, wrapInBlock = !isGoogleStyle)
     }
-
-    return visitEachCommaSeparated(
-        list.arguments,
-        hasTrailingComma,
-        wrapInBlock = wrapInBlock,
-        breakBeforePostfix = breakBeforePostfix,
-        leadingBreak = leadingBreak,
-        prefix = "(",
-        postfix = ")",
-        breakAfterPrefix = breakAfterPrefix,
-    )
   }
 
   /** Example `{ 1 + 1 }` (as lambda) or `{ (x, y) -> x + y }` */
   override fun visitLambdaExpression(lambdaExpression: KtLambdaExpression) {
-    visitLambdaExpressionInternal(lambdaExpression, brokeBeforeBrace = null)
+    visitLambdaExpressionInternal(lambdaExpression, brokeBeforeBrace = null, forceBreakBody = false)
   }
 
   /**
@@ -854,10 +806,21 @@ class KotlinInputAstVisitor(
    *       car()
    *     }
    * ```
+   * @param forceBreakBody if true, forces the lambda to be multi-line. Useful for call expressions
+   * where it would look weird for the lambda to be on one-line. For example, here we avoid
+   * one-lining `{ x = 0 }` since the parameters have a trailing comma:
+   * ```
+   * foo.bar(
+   *   trailingComma,
+   * ) {
+   *   x = 0
+   * }
+   * ```
    */
   private fun visitLambdaExpressionInternal(
       lambdaExpression: KtLambdaExpression,
       brokeBeforeBrace: BreakTag?,
+      forceBreakBody: Boolean,
   ) {
     builder.sync(lambdaExpression)
 
@@ -892,7 +855,9 @@ class KotlinInputAstVisitor(
 
     if (hasParams || hasArrow) {
       builder.space()
-      builder.block(bracePlusExpressionIndent) { visitEachCommaSeparated(valueParams) }
+      builder.block(bracePlusExpressionIndent) {
+        forEachCommaSeparated(valueParams) { it.accept(this) }
+      }
       builder.block(bracePlusBlockIndent) {
         if (lambdaExpression.functionLiteral.valueParameterList?.trailingComma != null) {
           builder.token(",")
@@ -903,6 +868,10 @@ class KotlinInputAstVisitor(
         builder.token("->")
       }
       builder.breakOp(Doc.FillMode.UNIFIED, "", bracePlusZeroIndent)
+    }
+
+    if (forceBreakBody) {
+      builder.forcedBreak()
     }
 
     if (hasStatements) {
@@ -962,11 +931,32 @@ class KotlinInputAstVisitor(
 
   /** e.g., `a: Int, b: Int, c: Int` in `fun foo(a: Int, b: Int, c: Int) { ... }`. */
   override fun visitParameterList(list: KtParameterList) {
-    visitEachCommaSeparated(list.parameters, list.trailingComma != null, wrapInBlock = false)
+    emitParameterLikeList(list.parameters, list.trailingComma != null, wrapInBlock = false)
   }
 
   /**
-   * Visit each element in [list], with comma (,) tokens in-between.
+   * Emit a list of elements that look like function parameters or arguments, e.g., `a, b, c` in
+   * `foo(a, b, c)`
+   */
+  private fun <T : PsiElement> emitParameterLikeList(
+      list: List<T>?,
+      hasTrailingComma: Boolean,
+      wrapInBlock: Boolean
+  ) {
+    if (list.isNullOrEmpty()) {
+      return
+    }
+
+    forEachCommaSeparated(list, hasTrailingComma, wrapInBlock, trailingBreak = isGoogleStyle) {
+      visit(it)
+    }
+    if (hasTrailingComma) {
+      builder.breakOp(Doc.FillMode.UNIFIED, "", expressionBreakNegativeIndent)
+    }
+  }
+
+  /**
+   * Call `function` for each element in `list`, with comma (,) tokens inbetween.
    *
    * Example:
    * ```
@@ -983,15 +973,6 @@ class KotlinInputAstVisitor(
    * 5
    * ```
    *
-   * Optionally include a prefix and postfix:
-   * ```
-   *   (
-   *     a,
-   *     b,
-   *     c,
-   * )
-   * ```
-   *
    * @param hasTrailingComma if true, each element is placed on its own line (even if they could've
    * fit in a single line), and a trailing comma is emitted.
    *
@@ -1000,160 +981,88 @@ class KotlinInputAstVisitor(
    * a,
    * b,
    * ```
-   *
-   * @param wrapInBlock if true, place all the elements in a block. When there's no [leadingBreak],
-   * this will be negatively indented. Note that the [prefix] and [postfix] aren't included in the
-   * block.
-   * @param leadingBreak if true, break before the first element.
-   * @param prefix if provided, emit this before the first element.
-   * @param postfix if provided, emit this after the last element (or trailing comma).
-   * @param breakAfterPrefix if true, emit a break after [prefix], but before the start of the
-   * block.
-   * @param breakBeforePostfix if true, place a break after the last element. Redundant when
-   * [hasTrailingComma] is true.
-   * @return a [BreakTag] which can tell you if a break was taken, but only when the list doesn't
-   * terminate in a negative closing indent.
-   *
-   * Example 1, this returns a BreakTag which tells you a break wasn't taken:
-   * ```
-   * (arg1, arg2)
-   * ```
-   *
-   * Example 2, this returns a BreakTag which tells you a break WAS taken:
-   * ```
-   * (
-   *     arg1,
-   *     arg2)
-   * ```
-   *
-   * Example 3, this returns null:
-   * ```
-   * (
-   *     arg1,
-   *     arg2,
-   * )
-   * ```
-   *
-   * Example 4, this also returns null (similar to example 2, but Google style):
-   * ```
-   * (
-   *     arg1,
-   *     arg2
-   * )
-   * ```
    */
-  private fun visitEachCommaSeparated(
-      list: Iterable<PsiElement>,
+  private fun <T> forEachCommaSeparated(
+      list: Iterable<T>,
       hasTrailingComma: Boolean = false,
       wrapInBlock: Boolean = true,
-      leadingBreak: Boolean = true,
-      prefix: String? = null,
-      postfix: String? = null,
-      breakAfterPrefix: Boolean = true,
-      breakBeforePostfix: Boolean = isGoogleStyle,
-  ): BreakTag? {
-    val breakAfterLastElement = hasTrailingComma || (postfix != null && breakBeforePostfix)
-    val nameTag = if (breakAfterLastElement) null else genSym()
-
-    if (prefix != null) {
-      builder.token(prefix)
-      if (breakAfterPrefix) {
-        builder.breakOp(Doc.FillMode.UNIFIED, "", ZERO, Optional.ofNullable(nameTag))
-      }
-    }
-
-    val breakType = if (hasTrailingComma) Doc.FillMode.FORCED else Doc.FillMode.UNIFIED
-    fun emitComma() {
-      builder.token(",")
-      builder.breakOp(breakType, " ", ZERO)
-    }
-
-    val indent = if (leadingBreak) ZERO else expressionBreakNegativeIndent
-    builder.block(indent, isEnabled = wrapInBlock) {
-      if (leadingBreak) {
-        builder.breakOp(breakType, "", ZERO)
-      }
-
-      var first = true
-      for (value in list) {
-        if (!first) emitComma()
-        first = false
-        visit(value)
-      }
-
-      if (hasTrailingComma) {
-        emitComma()
-      }
-    }
-
-    if (breakAfterLastElement) {
-      // a negative closing indent places the postfix to the left of the elements
-      // see examples 2 and 4 in the docstring
-      builder.breakOp(breakType, "", expressionBreakNegativeIndent)
-    }
-
-    if (postfix != null) {
-      if (breakAfterLastElement) {
-        // Indent trailing comments to the same depth as list items. We really have to fight
-        // googlejavaformat here for some reason.
-        builder.blankLineWanted(OpsBuilder.BlankLineWanted.NO)
-        builder.block(expressionBreakNegativeIndent) {
-          builder.breakOp(breakType, "", ZERO)
-          builder.token(postfix, expressionBreakIndent)
+      trailingBreak: Boolean = false,
+      function: (T) -> Unit
+  ) {
+    if (hasTrailingComma) {
+      builder.block(ZERO) {
+        builder.forcedBreak()
+        for (value in list) {
+          function(value)
+          builder.token(",")
+          builder.forcedBreak()
         }
-      } else {
-        builder.token(postfix)
       }
+      return
     }
 
-    return nameTag
+    builder.block(ZERO, isEnabled = wrapInBlock) {
+      var first = true
+      builder.breakOp(Doc.FillMode.UNIFIED, "", ZERO)
+      for (value in list) {
+        if (!first) {
+          builder.token(",")
+          builder.breakOp(Doc.FillMode.UNIFIED, " ", ZERO)
+        }
+        first = false
+
+        function(value)
+      }
+    }
+    if (trailingBreak) {
+      builder.breakOp(Doc.FillMode.UNIFIED, "", expressionBreakNegativeIndent)
+    }
   }
 
   /** Example `a` in `foo(a)`, or `*a`, or `limit = 50` */
   override fun visitArgument(argument: KtValueArgument) {
-    visitArgumentInternal(
-        argument,
-        wrapInBlock = true,
-        brokeBeforeBrace = null,
-    )
+    visitArgumentInternal(argument, forceBreakLambdaBody = false)
   }
 
   /**
    * The internal version of [visitArgument].
    *
-   * @param wrapInBlock if true places the argument expression in a block.
+   * @param forceBreakLambdaBody if true (and [argument] is of type [KtLambdaExpression]), forces
+   * the lambda to be multi-line. See documentation of [visitLambdaExpressionInternal] for an
+   * example.
    */
   private fun visitArgumentInternal(
       argument: KtValueArgument,
-      wrapInBlock: Boolean,
-      brokeBeforeBrace: BreakTag?,
+      forceBreakLambdaBody: Boolean,
   ) {
     builder.sync(argument)
     val hasArgName = argument.getArgumentName() != null
     val isLambda = argument.getArgumentExpression() is KtLambdaExpression
-    if (hasArgName) {
-      visit(argument.getArgumentName())
-      builder.space()
-      builder.token("=")
-      if (isLambda) {
+    builder.block(ZERO) {
+      if (hasArgName) {
+        visit(argument.getArgumentName())
         builder.space()
+        builder.token("=")
+        if (isLambda) {
+          builder.space()
+        }
       }
-    }
-    val indent = if (hasArgName && !isLambda) expressionBreakIndent else ZERO
-    builder.block(indent, isEnabled = wrapInBlock) {
-      if (hasArgName && !isLambda) {
-        builder.breakOp(Doc.FillMode.INDEPENDENT, " ", ZERO)
-      }
-      if (argument.isSpread) {
-        builder.token("*")
-      }
-      if (isLambda) {
-        visitLambdaExpressionInternal(
-            argument.getArgumentExpression() as KtLambdaExpression,
-            brokeBeforeBrace = brokeBeforeBrace,
-        )
-      } else {
-        visit(argument.getArgumentExpression())
+      builder.block(if (hasArgName && !isLambda) expressionBreakIndent else ZERO) {
+        if (hasArgName && !isLambda) {
+          builder.breakOp(Doc.FillMode.INDEPENDENT, " ", ZERO)
+        }
+        if (argument.isSpread) {
+          builder.token("*")
+        }
+        if (isLambda) {
+          visitLambdaExpressionInternal(
+              argument.getArgumentExpression() as KtLambdaExpression,
+              brokeBeforeBrace = null,
+              forceBreakBody = forceBreakLambdaBody,
+          )
+        } else {
+          visit(argument.getArgumentExpression())
+        }
       }
     }
   }
@@ -1448,7 +1357,11 @@ class KotlinInputAstVisitor(
           else -> throw AssertionError(expr)
         }
 
-    visitLambdaExpressionInternal(lambdaExpression, brokeBeforeBrace = breakToExpr)
+    visitLambdaExpressionInternal(
+        lambdaExpression,
+        brokeBeforeBrace = breakToExpr,
+        forceBreakBody = false,
+    )
   }
 
   override fun visitClassOrObject(classOrObject: KtClassOrObject) {
@@ -1597,7 +1510,7 @@ class KotlinInputAstVisitor(
           call.typeArgumentList,
           call.valueArgumentList,
           call.lambdaArguments,
-      )
+          lambdaIndent = ZERO)
     }
   }
 
@@ -1831,7 +1744,7 @@ class KotlinInputAstVisitor(
 
   override fun visitSuperTypeList(list: KtSuperTypeList) {
     builder.sync(list)
-    builder.block(expressionBreakIndent) { visitEachCommaSeparated(list.entries) }
+    builder.block(expressionBreakIndent) { forEachCommaSeparated(list.entries) { visit(it) } }
   }
 
   override fun visitSuperTypeCallEntry(call: KtSuperTypeCallEntry) {
@@ -1978,7 +1891,7 @@ class KotlinInputAstVisitor(
       builder.token("[")
       builder.breakOp(Doc.FillMode.UNIFIED, "", expressionBreakIndent)
       builder.block(expressionBreakIndent) {
-        visitEachCommaSeparated(
+        emitParameterLikeList(
             expression.indexExpressions, expression.trailingComma != null, wrapInBlock = true)
       }
     }
@@ -1998,7 +1911,7 @@ class KotlinInputAstVisitor(
       builder.token("(")
       builder.breakOp(Doc.FillMode.UNIFIED, "", expressionBreakIndent)
       builder.block(expressionBreakIndent) {
-        visitEachCommaSeparated(
+        emitParameterLikeList(
             destructuringDeclaration.entries, hasTrailingComma, wrapInBlock = true)
       }
     }
@@ -2060,7 +1973,7 @@ class KotlinInputAstVisitor(
         // Break before args.
         builder.breakOp(Doc.FillMode.UNIFIED, "", expressionBreakIndent)
         builder.block(expressionBreakIndent) {
-          visitEachCommaSeparated(list.parameters, list.trailingComma != null, wrapInBlock = true)
+          emitParameterLikeList(list.parameters, list.trailingComma != null, wrapInBlock = true)
         }
       }
       builder.token(">")
@@ -2085,7 +1998,7 @@ class KotlinInputAstVisitor(
     builder.token("where")
     builder.space()
     builder.sync(list)
-    visitEachCommaSeparated(list.constraints)
+    forEachCommaSeparated(list.constraints) { visit(it) }
   }
 
   /** Example `T : Foo` */
@@ -2224,16 +2137,10 @@ class KotlinInputAstVisitor(
       builder.token(".")
     }
     builder.block(expressionBreakIndent) {
-      val parameterList = type.parameterList
-      if (parameterList != null) {
-        visitEachCommaSeparated(
-            parameterList.parameters,
-            prefix = "(",
-            postfix = ")",
-            hasTrailingComma = parameterList.trailingComma != null,
-        )
-      }
+      builder.token("(")
+      visit(type.parameterList)
     }
+    builder.token(")")
     builder.space()
     builder.token("->")
     builder.space()
@@ -2285,14 +2192,15 @@ class KotlinInputAstVisitor(
    */
   override fun visitCollectionLiteralExpression(expression: KtCollectionLiteralExpression) {
     builder.sync(expression)
-    builder.block(expressionBreakIndent) {
-      visitEachCommaSeparated(
-          expression.getInnerExpressions(),
-          expression.trailingComma != null,
-          prefix = "[",
-          postfix = "]",
-          wrapInBlock = true)
+    builder.block(ZERO) {
+      builder.token("[")
+      builder.breakOp(Doc.FillMode.UNIFIED, "", expressionBreakIndent)
+      builder.block(expressionBreakIndent) {
+        emitParameterLikeList(
+            expression.getInnerExpressions(), expression.trailingComma != null, wrapInBlock = true)
+      }
     }
+    builder.token("]")
   }
 
   override fun visitTryExpression(expression: KtTryExpression) {
