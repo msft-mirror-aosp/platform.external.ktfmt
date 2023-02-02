@@ -39,6 +39,11 @@ def main():
       help='The file containing the Kotlin files and directories that should be included/excluded, generated using generate_includes_file.py.'
   )
   parser.add_argument(
+      '--jar',
+      default='',
+      help='The path to the ktfmt jar.'
+  )
+  parser.add_argument(
       'files',
       nargs='*',
       help='The files to format or check. If --include_file is specified, only the files at their intersection will be formatted/checked.'
@@ -91,8 +96,7 @@ def main():
   ktfmt_args += kt_files
 
   dir = os.path.normpath(os.path.dirname(__file__))
-  ktfmt_jar = os.path.join(
-      dir, '../../prebuilts/build-tools/common/framework/ktfmt.jar')
+  ktfmt_jar = args.jar if args.jar else os.path.join(dir, '../../prebuilts/build-tools/common/framework/ktfmt.jar')
 
   ktlint_env = os.environ.copy()
   ktlint_env['JAVA_CMD'] = 'java'
