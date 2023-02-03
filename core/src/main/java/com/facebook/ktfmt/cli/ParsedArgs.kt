@@ -33,8 +33,6 @@ data class ParsedArgs(
 
     /** Return exit code 1 if any formatting changes are detected. */
     val setExitIfChanged: Boolean,
-    /** File name to report when formating code from stdin */
-    val stdinName: String?,
 ) {
   companion object {
 
@@ -52,7 +50,6 @@ data class ParsedArgs(
       var formattingOptions = FormattingOptions()
       var dryRun = false
       var setExitIfChanged = false
-      var stdinName: String? = null
 
       for (arg in args) {
         when {
@@ -61,23 +58,12 @@ data class ParsedArgs(
           arg == "--kotlinlang-style" -> formattingOptions = Formatter.KOTLINLANG_FORMAT
           arg == "--dry-run" || arg == "-n" -> dryRun = true
           arg == "--set-exit-if-changed" -> setExitIfChanged = true
-          arg.startsWith("--stdin-name") -> stdinName = parseKeyValueArg(err, "--stdin-name", arg)
           arg.startsWith("--") -> err.println("Unexpected option: $arg")
           arg.startsWith("@") -> err.println("Unexpected option: $arg")
           else -> fileNames.add(arg)
         }
       }
-
-      return ParsedArgs(fileNames, formattingOptions, dryRun, setExitIfChanged, stdinName)
-    }
-
-    private fun parseKeyValueArg(err: PrintStream, key: String, arg: String): String? {
-      val parts = arg.split('=', limit = 2)
-      if (parts[0] != key || parts.size != 2) {
-        err.println("Found option '${arg}', expected '${key}=<value>'")
-        return null
-      }
-      return parts[1]
+      return ParsedArgs(fileNames, formattingOptions, dryRun, setExitIfChanged)
     }
   }
 }
