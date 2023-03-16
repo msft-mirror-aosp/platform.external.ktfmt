@@ -108,10 +108,13 @@ def main():
           '**********************************************************************'
       )
       print(
-          'Some Kotlin files are not properly formatted. Run the following command to format them:\n\n'
-      )
+          'Some Kotlin files are not properly formatted. Run the command below to format them.\n'
+          'Note: If you are using the Android Studio ktfmt plugin, make sure to select the '
+          'Kotlinlang style in \'Editor > ktfmt Settings\'.\n')
       script_path = os.path.normpath(__file__)
-      incorrect_files = stdout.decode('utf-8').splitlines()
+      incorrect_files = [
+          os.path.abspath(file) for file in stdout.decode('utf-8').splitlines()
+      ]
       print('$ ' + script_path + ' ' + ' '.join(incorrect_files) + '\n')
       print(
           '**********************************************************************'
