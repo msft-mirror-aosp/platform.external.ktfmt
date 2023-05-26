@@ -96,7 +96,7 @@ def main():
   ktfmt_args += kt_files
 
   dir = os.path.normpath(os.path.dirname(__file__))
-  ktfmt_jar = args.jar if args.jar else os.path.join(dir, '../../prebuilts/build-tools/common/framework/ktfmt.jar')
+  ktfmt_jar = args.jar if args.jar else os.path.join(dir, 'ktfmt.jar')
 
   ktlint_env = os.environ.copy()
   ktlint_env['JAVA_CMD'] = 'java'
