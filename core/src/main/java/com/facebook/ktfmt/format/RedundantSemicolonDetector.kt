@@ -16,9 +16,12 @@
 
 package com.facebook.ktfmt.format
 
+import org.jetbrains.kotlin.com.intellij.psi.PsiComment
 import org.jetbrains.kotlin.com.intellij.psi.PsiElement
+import org.jetbrains.kotlin.com.intellij.psi.PsiWhiteSpace
+import org.jetbrains.kotlin.psi.KtClass
+import org.jetbrains.kotlin.psi.KtClassBody
 import org.jetbrains.kotlin.psi.KtContainerNodeForControlStructureBody
-import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.psi.KtEnumEntry
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtLambdaExpression
@@ -35,15 +38,13 @@ internal class RedundantSemicolonDetector {
 
   fun getRedundantSemicolonElements(): List<PsiElement> = extraSemicolons
 
-  /** returns **true** if this element was an extra comma, **false** otherwise. */
-  fun takeElement(element: PsiElement, superBlock: () -> Unit) {
+  fun takeElement(element: PsiElement) {
     if (isExtraSemicolon(element)) {
       extraSemicolons += element
-    } else {
-      superBlock.invoke()
     }
   }
 
+  /** returns **true** if this element was an extra comma, **false** otherwise. */
   private fun isExtraSemicolon(element: PsiElement): Boolean {
     if (element.text != ";") {
       return false
@@ -53,9 +54,30 @@ internal class RedundantSemicolonDetector {
     if (parent is KtStringTemplateExpression || parent is KtStringTemplateEntry) {
       return false
     }
-    if (parent is KtEnumEntry &&
-        parent.siblings(forward = true, withItself = false).any { it is KtDeclaration }) {
-      return false
+
+    if (parent is KtEnumEntry) {
+      val classBody = parent.parent as KtClassBody
+      // Terminating semicolon with no other class members.
+      return classBody.children.last() == parent
+    }
+    if (parent is KtClassBody) {
+      val enumEntryList = EnumEntryList.extractChildList(parent) ?: return true
+      // Is not terminating semicolon or is terminating with no members.
+      return element != enumEntryList.terminatingSemicolon || parent.children.isEmpty()
+    }
+
+    if (parent is KtClassBody) {
+      val grandParent = parent.parent
+      if (grandParent is KtClass && grandParent.isEnum()) {
+        // Don't remove the first semicolon on non-empty enum.
+        if (element.getPrevSiblingIgnoringWhitespaceAndComments()?.text == "{" &&
+            element
+                .siblings(forward = true, withItself = false)
+                .filter { it !is PsiWhiteSpace && it !is PsiComment && it.text != ";" }
+                .firstOrNull()
+                ?.text != "}")
+            return false
+      }
     }
 
     val prevLeaf = element.prevLeaf(false)

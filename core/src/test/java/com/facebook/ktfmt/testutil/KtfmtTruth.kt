@@ -23,16 +23,19 @@ import com.facebook.ktfmt.format.Parser
 import com.google.common.truth.FailureMetadata
 import com.google.common.truth.Subject
 import com.google.common.truth.Truth
+import org.intellij.lang.annotations.Language
 import org.junit.Assert
 
 /**
  * Verifies the given code passes through formatting, and stays the same at the end
  *
- * @param code a code string that continas an optional first line made of "---" in the case
- *   [deduceMaxWidth] is true. For example:
+ * @param code a code string that contains an optional first line made of at least 8 '-' or '/' in
+ *   the case [deduceMaxWidth] is true. For example:
  * ```
- * --------------------
- * // exactly 20 `-` above
+ * ////////////////////////
+ * // exactly 24 `/` above
+ * // and that will be the
+ * // size of the line
  * fun f()
  * ```
  *
@@ -40,25 +43,26 @@ import org.junit.Assert
  *   beginning to indicate the max width to format by
  */
 fun assertFormatted(
-    code: String,
+    @Language("kts") code: String,
     formattingOptions: FormattingOptions = FormattingOptions(),
-    deduceMaxWidth: Boolean = false
+    deduceMaxWidth: Boolean = false,
 ) {
   val first = code.lines().first()
   var deducedCode = code
   var maxWidth = FormattingOptions.DEFAULT_MAX_WIDTH
-  val isFirstLineAMaxWidthMarker = first.all { it == '-' }
+  val lineWidthMarkers = setOf('-', '/')
+  val isFirstLineAMaxWidthMarker = first.length >= 8 && first.all { it in lineWidthMarkers }
   if (deduceMaxWidth) {
     if (!isFirstLineAMaxWidthMarker) {
       throw RuntimeException(
-          "deduceMaxWidth is false, please remove the first dashes only line from the code (i.e. ---)")
+          "When deduceMaxWidth is true the first line needs to be all dashes only (i.e. ---)")
     }
     deducedCode = code.substring(code.indexOf('\n') + 1)
     maxWidth = first.length
   } else {
     if (isFirstLineAMaxWidthMarker) {
       throw RuntimeException(
-          "When deduceMaxWidth is true the first line need to be all dashes only (i.e. ---)")
+          "deduceMaxWidth is false, please remove the first dashes only line from the code (i.e. ---)")
     }
   }
   assertThatFormatting(deducedCode)
@@ -66,9 +70,11 @@ fun assertFormatted(
       .isEqualTo(deducedCode)
 }
 
-fun assertThatFormatting(code: String): FormattedCodeSubject {
+fun assertThatFormatting(@Language("kts") code: String): FormattedCodeSubject {
   fun codes(): Subject.Factory<FormattedCodeSubject, String> {
-    return Subject.Factory { metadata, subject -> FormattedCodeSubject(metadata, subject) }
+    return Subject.Factory { metadata, subject ->
+      FormattedCodeSubject(metadata, checkNotNull(subject))
+    }
   }
   return Truth.assertAbout(codes()).that(code)
 }
@@ -88,7 +94,7 @@ class FormattedCodeSubject(metadata: FailureMetadata, private val code: String) 
     return this
   }
 
-  fun isEqualTo(expectedFormatting: String) {
+  fun isEqualTo(@Language("kts") expectedFormatting: String) {
     if (!allowTrailingWhitespace && expectedFormatting.lines().any { it.endsWith(" ") }) {
       throw RuntimeException(
           "Expected code contains trailing whitespace, which the formatter usually doesn't output:\n" +
@@ -110,7 +116,7 @@ class FormattedCodeSubject(metadata: FailureMetadata, private val code: String) 
         println(expectedFormatting)
         println("#".repeat(20))
         println(
-            "Need more information about the break operations?" +
+            "Need more information about the break operations? " +
                 "Run test with assertion with \"FormattingOptions(debuggingPrintOpsAfterFormatting = true)\"")
       }
     } catch (e: Error) {
