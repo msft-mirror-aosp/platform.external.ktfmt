@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" 
+<project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.facebook</groupId>
   <artifactId>ktfmt-parent</artifactId>
-  <version>0.43</version>
+  <version>0.49</version>
   <packaging>pom</packaging>
 
   <name>Ktfmt Parent</name>
   <description>A program that reformats Kotlin source code to comply with the common community standard for Kotlin code conventions.</description>
-  <url>https://github.com/facebookincubator/ktfmt</url>
+  <url>https://github.com/facebook/ktfmt</url>
   <inceptionYear>2019</inceptionYear>
   <licenses>
     <license>
@@ -24,9 +24,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:https://github.com/facebookincubator/ktfmt.git</connection>
-    <developerConnection>scm:git:git@github.com:facebookincubator/ktfmt.git</developerConnection>
-    <url>https://github.com/facebookincubator/ktfmt.git</url>
+    <connection>scm:git:https://github.com/facebook/ktfmt.git</connection>
+    <developerConnection>scm:git:git@github.com:facebook/ktfmt.git</developerConnection>
+    <url>https://github.com/facebook/ktfmt.git</url>
   </scm>
 
   <modules>
