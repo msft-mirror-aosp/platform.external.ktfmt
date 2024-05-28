@@ -1,6 +1,4 @@
-[![](https://github.com/facebookincubator/ktfmt/workflows/build/badge.svg)](https://github.com/facebookincubator/ktfmt/actions?query=workflow%3Abuild)
-
-# ktfmt
+# ktfmt [![GitHub release](https://img.shields.io/github/release/facebook/ktfmt?sort=semver)](https://github.com/facebook/ktfmt/releases/)   [![](https://github.com/facebook/ktfmt/workflows/Build%20and%20Test/badge.svg)](https://github.com/facebook/ktfmt/actions/workflows/build_and_test.yml "GitHub Actions workflow status")   [![slack](https://img.shields.io/badge/Slack-ktfmt-purple.svg?logo=slack)](https://slack-chats.kotlinlang.org/c/ktfmt)   [![invite](https://img.shields.io/badge/Request%20a%20Slack%20invite-8A2BE2)](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up)   [![issues - ktfmt](https://img.shields.io/github/issues/facebook/ktfmt)](https://github.com/facebook/ktfmt/issues)
 
 `ktfmt` is a program that pretty-prints (formats) Kotlin code, based on [google-java-format](https://github.com/google/google-java-format).
 
@@ -19,6 +17,11 @@ For comparison, the same code formatted by [`ktlint`](https://github.com/pintere
 | Formatted by `ktlint`|Formatted by IntelliJ|
 | ------ | --------|
 | ![ktlint](docs/images/ktlint.png) | ![IntelliJ](docs/images/intellij.png) |
+
+## Playground
+
+We have a [live playground](https://facebook.github.io/ktfmt/) where you can easily see how ktfmt would format your code.
+Give it a try! https://facebook.github.io/ktfmt/
 
 ## Using the formatter
 
@@ -53,7 +56,7 @@ the project's code style settings.
 
 ### from the command-line
 
-[Download the formatter](https://github.com/facebookincubator/ktfmt/releases)
+[Download the formatter](https://github.com/facebook/ktfmt/releases)
 and run it with:
 
 ```

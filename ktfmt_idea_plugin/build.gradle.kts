@@ -15,17 +15,18 @@
  */
 
 plugins {
-  id("org.jetbrains.intellij") version "0.7.2"
+  id("org.jetbrains.intellij") version "1.17.3"
   java
   id("com.diffplug.spotless") version "5.10.2"
 }
 
-val ktfmtVersion = rootProject.file("../version.txt").readText().trim()
+val currentKtfmtVersion = rootProject.file("../version.txt").readText().trim()
+val stableKtfmtVersion = rootProject.file("../stable_version.txt").readText().trim()
 val pluginVersion = "1.1"
 
 group = "com.facebook"
 
-version = "$pluginVersion.$ktfmtVersion"
+version = "$pluginVersion.$currentKtfmtVersion"
 
 repositories {
   mavenCentral()
@@ -38,25 +39,25 @@ java {
 }
 
 dependencies {
-  implementation("com.facebook", "ktfmt", ktfmtVersion)
-  implementation("com.google.googlejavaformat", "google-java-format", "1.8")
+  implementation("com.facebook", "ktfmt", stableKtfmtVersion)
+  implementation("com.google.googlejavaformat", "google-java-format", "1.22.0")
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
   // Version with which to build (and run; unless alternativeIdePath is specified)
-  version = "2020.3"
+  version.set("2022.1")
   // To run on a different IDE, uncomment and specify a path.
-  // alternativeIdePath = "/Applications/Android Studio.app"
+  // localPath = "/Applications/Android Studio.app"
 }
 
 tasks {
   patchPluginXml {
-    sinceBuild("201")
-    untilBuild("")
+    sinceBuild.set("221")
+    untilBuild.set("")
   }
-  publishPlugin { token(System.getenv("JETBRAINS_MARKETPLACE_TOKEN")) }
-  runPluginVerifier { ideVersions(listOf("211.6432.7")) }
+  publishPlugin { token.set(System.getenv("JETBRAINS_MARKETPLACE_TOKEN")) }
+  runPluginVerifier { ideVersions.set(listOf("221")) }
 }
 
-spotless { java { googleJavaFormat() } }
+spotless { java { googleJavaFormat("1.22.0") } }
